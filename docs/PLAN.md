@@ -47,7 +47,6 @@ y la inyecta en el mismo sitio por el que llegarán los datos reales. Permite ha
 - ⬜ Crear el **bot de Telegram** (@BotFather) y el **canal de difusión**
 - ⬜ Enviar al profesor la propuesta final **por escrito** (correo) y guardar su respuesta
 - ⬜ Preguntar si la universidad tiene **impresora 3D** que podamos usar (ver etapa 10)
-- ⬜ Repartir responsables (propuesta abajo)
 
 **Hecho cuando:** pedido hecho, los 3 con el entorno funcionando y el visto bueno por escrito.
 
@@ -105,25 +104,21 @@ Un único firmware; el rol (BASE / CAZADOR / PÁJARO) se decide por configuraci�
 
 **Se prueba con** el mando virtual (ratón) en casa y con los mandos simulados en el laboratorio.
 
-## Etapa 7 — SCADA en Node-RED + MongoDB 🟢 🔀
-- ⬜ Guardar con fecha: estado y datos de los nodos, cada disparo, partidas y **log** (con origen MQTT/botón)
-- ⬜ Dashboard por pestañas: estado de los nodos, control individual y de grupo, configuración
-- ⬜ Histórico: consultas por fechas con atajos (día/semana/mes), gráficas, estadísticas, **CSV**
-- ⬜ Estadísticas de juego: % de acierto, tiempo de reacción, mapa de calor de disparos
-- ⬜ **Alarmas** con umbrales configurables (p. ej. temperatura de la placa, señal débil, pérdidas
-  altas) → aviso en el dashboard + Telegram + log.
-  ⚠️ El enunciado pide umbrales de temperatura y humedad: confirmar con el profesor qué parámetros valen.
+## Etapa 7 — Base de datos (Node-RED + MongoDB) 🟢 🔀
+- ⬜ Guardar con fecha el **log** de eventos: conexiones/desconexiones, disparos, impactos, órdenes, actualizaciones (con su origen)
+- ⬜ Guardar las **partidas** (jugadores, duración, puntuación) y los **escenarios**
+- ⬜ Consultas para el ranking de Telegram y para cargar los escenarios en el juego
 
 **Se prueba con** datos de los mandos simulados (o mensajes MQTT inyectados a mano desde Node-RED).
 
 ## Etapa 8 — Telegram 🟢 🔀
 - ⬜ Bot: `/estado`, `/partida`, `/ranking`, `/actualizar`, control de LED/vibración
-- ⬜ Canal: resultados de partidas, récords, alarmas, desconexiones, actualizaciones
+- ⬜ Canal: resultados de partidas, récords, desconexiones, actualizaciones
 
 ## Etapa 9 — FOTA completo 🟢
 - ⬜ Base: al arrancar, por MQTT, pulsación larga y periódica (configurable, 0 = no)
 - ⬜ Mandos: orden por ESP-NOW desde la base → WiFi temporal → descarga → vuelta a ESP-NOW
-- ⬜ Versión de cada nodo visible en el dashboard; no actualizar durante una partida
+- ⬜ Versión de cada nodo consultable por Telegram (`/estado`); no actualizar durante una partida
 - ⬜ Demo: cambiar el color del LED en la v2 y `/actualizar`
 
 ## Etapa 10 — Soportes de los mandos 🟢 (diseño) / 🔴 (montaje final)
@@ -184,19 +179,9 @@ USB y botón accesibles, LED visible, y cables sujetos para que no se suelten al
 
 ---
 
-## Reparto propuesto (ajustadlo)
-| Persona | Responsable de | Etapas |
-|---|---|---|
-| Integrante 1 | Mandos: sensor (simulado y real), puntería, vibración, botones, soportes | 3, 4, 10 |
-| Integrante 2 | Base/pasarela, MQTT, FOTA, MongoDB | 2, 5, 7 (datos), 9 |
-| Integrante 3 | Juego web, mando virtual, dashboard, Telegram | 6, 7 (interfaz), 8 |
-
-Todos: etapas 11 y 12, y revisar el trabajo de los demás (Pull Requests).
-
 ## Riesgos y decisiones pendientes
 - **Puntería con IMU (deriva)** → se valida en la etapa 3 en cuanto lleguen los sensores.
 - **Vibración vs. IMU**: el motor puede meter ruido en la lectura → separarlos en el soporte y comprobarlo.
-- **Alarmas de temperatura/humedad** del enunciado → confirmar con el profesor los parámetros de alarma.
 - **Node-RED en Docker en los 3 PCs**: si los 3 están conectados a la vez al mismo broker y a la
   misma base de datos, se duplicarán registros y mensajes de Telegram. Solo una instancia debe
   ser la "oficial"; para desarrollar, usad topics/colecciones de prueba propios o un bot distinto.

@@ -13,7 +13,7 @@ Juego IoT "**Cazador vs. Pájaro**" con 3 ESP32-C3:
                          [BASE / pasarela]
  [Pájaro]  --ESP-NOW-->                    --WiFi/MQTT--> broker iot.ac.uma.es
             <--ESP-NOW-- (órdenes, FOTA)                       |
-                                                Node-RED: MongoDB, dashboard, Telegram
+                                                Node-RED: MongoDB (log y partidas), Telegram
 ```
 
 - **Plan por etapas:** [docs/PLAN.md](docs/PLAN.md)
