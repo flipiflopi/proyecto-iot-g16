@@ -32,7 +32,7 @@ Pruebas pequeñas e independientes, cada una en `firmware/pruebas/<nombre>`:
 **Hecho cuando:** cada prueba funciona sola y queda documentada en su README.
 
 ## Etapa 3 — Prototipo de puntería con IMU (cuando lleguen los sensores)
-- ⬜ Leer BNO085 (cazador) y MPU6050 (pájaro)
+- ⬜ Leer los 2 BNO085 (cazador y pájaro; mismo sensor y misma librería)
 - ⬜ Orientación estable: cuaternión/ángulos; medir la **deriva** en 5-10 min
 - ⬜ Calibración: apuntar al centro + botón; botón de recentrar
 - ⬜ Página web mínima: un punto que sigue a la mano (cazador) y un avión que se inclina (pájaro)
