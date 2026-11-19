@@ -108,7 +108,7 @@ Un único firmware; el rol (BASE / CAZADOR / PÁJARO) se decide por configuraci�
 📁 Carpeta y guía: [etapa6/GUIA.md](etapa6/GUIA.md)
 - ⬜ Canvas sencillo: escenario, cursor del cazador, pájaro pilotado
 - ⬜ Detección de impacto (la decide un solo sitio: el juego)
-- ⬜ Partida: inicio, tiempo, vidas, fin; evento de impacto → vibración en ambos mandos
+- ⬜ Partida según las reglas de [etapa6/REGLAS.md](etapa6/REGLAS.md) (60 s, 3 vidas, puntos según el tiempo); impacto → vibración en ambos mandos
 - ⬜ Escenarios cargados desde MongoDB
 
 **Se prueba con** el mando virtual (ratón) en casa y con los mandos simulados en el laboratorio.

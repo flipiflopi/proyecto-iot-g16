@@ -11,7 +11,7 @@ El juego "Cazador vs. Pájaro" en una página web sencilla servida por Node-RED.
 - [ ] **Mando virtual con el ratón** para desarrollar sin placas
 - [ ] Escenario, punto de mira del cazador, pájaro pilotado
 - [ ] Detección de impacto (la decide un solo sitio: el juego)
-- [ ] Partida: inicio, tiempo, vidas, fin; impacto → orden de vibración a los dos mandos
+- [ ] Partida según [REGLAS.md](REGLAS.md) (propuesta: 60 s, 3 vidas, puntos según el tiempo, cargador, turbo); impacto → vibración en los dos mandos
 - [ ] Escenarios cargados desde MongoDB (etapa 7)
 
 ## Terminada cuando
