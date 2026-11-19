@@ -1,0 +1,27 @@
+# Secretos: NUNCA al repositorio
+secrets.h
+**/secrets.h
+.env
+*.env
+
+# Compilación
+build/
+*.bin
+*.elf
+*.map
+
+# Node-RED (datos locales del contenedor)
+nodered/data/
+node_modules/
+.node-red/
+*credentials.json
+
+# Python
+__pycache__/
+*.pyc
+
+# Sistema / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
