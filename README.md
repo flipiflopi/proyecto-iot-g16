@@ -26,6 +26,7 @@ Juego IoT "**Cazador vs. Pájaro**" con 3 ESP32-C3:
 | `firmware/` | Programas de los ESP32 (Arduino IDE, core ESP32 3.x). `pruebas/` = prototipos de cada tecnología |
 | `nodered/` | Flujos de Node-RED exportados (`.json`) |
 | `juego/` | Página web del juego |
+| `hardware/` | Soportes de los mandos (diseños 3D `.stl`, fotos del montaje) |
 | `docs/` | Plan, compras, memoria, manual de usuario |
 
 ## Secretos (¡importante!)
