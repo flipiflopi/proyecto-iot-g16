@@ -7,7 +7,7 @@
 
 ## Tareas previstas
 - [ ] Elegir: **impresión 3D** (cazador con forma de pistola y el powerbank en el mango; pájaro con forma de ala o de mando horizontal) o **cartón / contrachapado** pegado sobre el powerbank
-- [ ] Medir el powerbank, la placa y el módulo BNO085
+- [ ] Medir el powerbank, la placa y los módulos BNO055 y MPU6050
 - [ ] Diseñar (Tinkercad / Fusion 360) y guardar los `.stl` en esta carpeta
 - [ ] Montar: IMU rígida y bien orientada, motor lejos de la IMU, USB y botón accesibles, LED visible
 
