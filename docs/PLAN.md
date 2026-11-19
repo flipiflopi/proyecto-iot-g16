@@ -11,7 +11,7 @@ Leyenda: ✅ hecho · ⬜ pendiente · 🔀 se puede repartir en paralelo entre 
 - ⬜ Hacer el pedido de AliExpress → ver [COMPRAS.md](COMPRAS.md) (lo primero: tarda en llegar)
 - ✅ Repositorio GitHub privado creado
 - ⬜ Invitar a los otros 2 integrantes (y al profesor si lo pide) como colaboradores
-- ⬜ Cada uno: clonar el repo, Arduino IDE con core ESP32 3.x, Node-RED en Docker
+- ⬜ Cada uno: clonar el repo, Arduino IDE con core ESP32 3.x, Node-RED en Docker (código en casa, pruebas en el laboratorio con sus ESP32-C3)
 - ⬜ Recoger las credenciales del grupo **II16** del Campus Virtual (MQTT y MongoDB) → van en `secrets.h`, **nunca** al repo
 - ⬜ Crear el **bot de Telegram** (@BotFather) y el **canal de difusión**
 - ⬜ Enviar al profesor la propuesta final **por escrito** (correo) y guardar su respuesta
@@ -53,7 +53,7 @@ Un único firmware; el rol (BASE / CAZADOR / PÁJARO) se decide por configuraci�
 - ⬜ ESP-NOW ↔ MQTT: publica en nombre de los mandos con los **topics obligatorios** (`II16/esp32c3-XXXX/...`)
 - ⬜ Latido de los mandos → `conexion` `online:false` si dejan de responder (equivalente a LWT)
 - ⬜ Reenvío en tiempo real al PC por USB serie
-- ⬜ OLED con marcador y zumbador
+- ⬜ LED RGB de la base con el estado de la partida (esperando, jugando, fin)
 - ⬜ Órdenes individuales y **de grupo** (topic `II16/all/...`)
 
 ## Etapa 6 — Juego (web servida por Node-RED) 🔀
@@ -67,7 +67,7 @@ Un único firmware; el rol (BASE / CAZADOR / PÁJARO) se decide por configuraci�
 - ⬜ Dashboard por pestañas: estado de los nodos, control individual y de grupo, configuración
 - ⬜ Histórico: consultas por fechas con atajos (día/semana/mes), gráficas, estadísticas, **CSV**
 - ⬜ Estadísticas de juego: % de acierto, tiempo de reacción, mapa de calor de disparos
-- ⬜ **Alarmas** con umbrales configurables (p. ej. batería baja, temperatura de la placa,
+- ⬜ **Alarmas** con umbrales configurables (p. ej. temperatura de la placa,
   señal débil, pérdidas altas) → aviso en el dashboard + Telegram + log.
   ⚠️ El enunciado pide umbrales de temperatura y humedad: confirmar con el profesor qué parámetros valen.
 
@@ -82,8 +82,8 @@ Un único firmware; el rol (BASE / CAZADOR / PÁJARO) se decide por configuraci�
 - ⬜ Demo: cambiar el color del LED en la v2 y `/actualizar`
 
 ## Etapa 10 — Hardware final y robustez
-- ⬜ Baterías, montaje en la mano/muñeca o carcasa, cableado definitivo
-- ⬜ Pruebas de fallo: mando sin batería, WiFi caída, broker caído, sensor desconectado
+- ⬜ Powerbanks, montaje en la mano/muñeca, cableado definitivo
+- ⬜ Pruebas de fallo: mando apagado, WiFi caída, broker caído, sensor desconectado
 - ⬜ Prueba completa de una partida de principio a fin, varias veces
 
 ## Etapa 11 — Memoria y defensa
