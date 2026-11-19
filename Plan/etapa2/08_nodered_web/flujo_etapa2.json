@@ -1,0 +1,114 @@
+[
+  {
+    "id": "e2tab000000000001",
+    "type": "tab",
+    "label": "Etapa 2 - mandos a la web",
+    "disabled": false,
+    "info": "UDP 5005 (puente serie o simulador) -> WebSocket /ws/mandos -> página /etapa2"
+  },
+  {
+    "id": "e2wslisten000001",
+    "type": "websocket-listener",
+    "path": "/ws/mandos",
+    "wholemsg": "false"
+  },
+  {
+    "id": "e2udpin000000001",
+    "type": "udp in",
+    "z": "e2tab000000000001",
+    "name": "Base (UDP 5005)",
+    "iface": "",
+    "port": "5005",
+    "ipv": "udp4",
+    "multicast": "false",
+    "group": "",
+    "datatype": "utf8",
+    "x": 140,
+    "y": 100,
+    "wires": [
+      [
+        "e2func0000000001"
+      ]
+    ]
+  },
+  {
+    "id": "e2func0000000001",
+    "type": "function",
+    "z": "e2tab000000000001",
+    "name": "Línea -> JSON",
+    "func": "// Línea de la base: \"O,id,yaw,pitch,roll,botones\"\nconst p = String(msg.payload).trim().split(',');\nif (p[0] !== 'O' || p.length < 6) return null;   // ignora líneas que no son de orientación\nconst datos = {\n    id: Number(p[1]),\n    yaw: Number(p[2]),\n    pitch: Number(p[3]),\n    roll: Number(p[4]),\n    disparo: Number(p[5]) & 1\n};\nif (Object.values(datos).some(Number.isNaN)) return null;  // línea corrupta\nmsg.payload = JSON.stringify(datos);\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 340,
+    "y": 100,
+    "wires": [
+      [
+        "e2wsout000000001"
+      ]
+    ]
+  },
+  {
+    "id": "e2wsout000000001",
+    "type": "websocket out",
+    "z": "e2tab000000000001",
+    "name": "A la web",
+    "server": "e2wslisten000001",
+    "client": "",
+    "x": 540,
+    "y": 100,
+    "wires": []
+  },
+  {
+    "id": "e2httpin00000001",
+    "type": "http in",
+    "z": "e2tab000000000001",
+    "name": "GET /etapa2",
+    "url": "/etapa2",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 140,
+    "y": 180,
+    "wires": [
+      [
+        "e2templ000000001"
+      ]
+    ]
+  },
+  {
+    "id": "e2templ000000001",
+    "type": "template",
+    "z": "e2tab000000000001",
+    "name": "Página web",
+    "field": "payload",
+    "fieldType": "msg",
+    "format": "html",
+    "syntax": "plain",
+    "template": "<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n<meta charset=\"utf-8\">\n<title>Etapa 2 - Mandos en directo</title>\n<style>\n  body { margin: 0; background: #10141c; color: #e8ecf3; font-family: sans-serif; }\n  header { padding: 8px 14px; display: flex; gap: 24px; align-items: center; }\n  .ok { color: #5fd38d; } .mal { color: #ff6b6b; }\n  canvas { display: block; margin: 0 auto; background: #1b2230; border-radius: 8px; }\n</style>\n</head>\n<body>\n<header>\n  <b>Etapa 2 · mando → base → PC → Node-RED → web</b>\n  <span id=\"estado\" class=\"mal\">desconectado</span>\n  <span id=\"frecuencia\">0 msg/s</span>\n</header>\n<canvas id=\"lienzo\" width=\"900\" height=\"560\"></canvas>\n<script>\nconst lienzo = document.getElementById('lienzo');\nconst ctx = lienzo.getContext('2d');\nconst mandos = {\n  1: { yaw: 0, pitch: 0, roll: 0, disparo: 0, ultimo: 0, flash: 0 },\n  2: { yaw: 0, pitch: 0, roll: 0, disparo: 0, ultimo: 0, flash: 0 }\n};\nconst GRADOS_A_PIXELES = 8;\nlet mensajes = 0;\n\nfunction conectar() {\n  const proto = location.protocol === 'https:' ? 'wss://' : 'ws://';\n  const ws = new WebSocket(proto + location.host + '/ws/mandos');\n  ws.onopen = () => { document.getElementById('estado').textContent = 'conectado'; document.getElementById('estado').className = 'ok'; };\n  ws.onclose = () => { document.getElementById('estado').textContent = 'desconectado'; document.getElementById('estado').className = 'mal'; setTimeout(conectar, 1000); };\n  ws.onmessage = (ev) => {\n    const d = JSON.parse(ev.data);\n    const m = mandos[d.id];\n    if (!m) return;\n    if (d.disparo && !m.disparo) m.flash = 12;   // flanco de subida = nuevo disparo\n    Object.assign(m, d, { ultimo: performance.now() });\n    mensajes++;\n  };\n}\nsetInterval(() => { document.getElementById('frecuencia').textContent = mensajes + ' msg/s'; mensajes = 0; }, 1000);\n\nfunction dibujar() {\n  const W = lienzo.width, H = lienzo.height, ahora = performance.now();\n  ctx.clearRect(0, 0, W, H);\n  ctx.strokeStyle = '#2c3648';\n  ctx.beginPath(); ctx.moveTo(W / 2, 0); ctx.lineTo(W / 2, H); ctx.moveTo(0, H / 2); ctx.lineTo(W, H / 2); ctx.stroke();\n\n  // Cazador: punto de mira (yaw -> x, pitch -> y)\n  const c = mandos[1];\n  const x = W / 2 + c.yaw * GRADOS_A_PIXELES, y = H / 2 - c.pitch * GRADOS_A_PIXELES;\n  const vivo1 = ahora - c.ultimo < 500;\n  ctx.strokeStyle = vivo1 ? '#ffcc33' : '#555';\n  ctx.lineWidth = 3;\n  ctx.beginPath(); ctx.arc(x, y, 18 + c.flash * 2, 0, Math.PI * 2); ctx.stroke();\n  ctx.beginPath(); ctx.moveTo(x - 26, y); ctx.lineTo(x + 26, y); ctx.moveTo(x, y - 26); ctx.lineTo(x, y + 26); ctx.stroke();\n  if (c.flash > 0) c.flash--;\n\n  // Pájaro: avión que se inclina (roll) y sube/baja (pitch)\n  const p = mandos[2];\n  const vivo2 = ahora - p.ultimo < 500;\n  ctx.save();\n  ctx.translate(W * 0.8, H / 2 - p.pitch * GRADOS_A_PIXELES);\n  ctx.rotate(p.roll * Math.PI / 180);\n  ctx.fillStyle = vivo2 ? '#5fb8ff' : '#555';\n  ctx.beginPath(); ctx.moveTo(-60, 0); ctx.lineTo(60, 0); ctx.lineTo(0, -14); ctx.closePath(); ctx.fill();\n  ctx.fillRect(-6, -30, 12, 30);\n  ctx.restore();\n\n  ctx.fillStyle = '#9aa7bd';\n  ctx.font = '14px sans-serif';\n  ctx.fillText('Cazador (id 1): yaw ' + c.yaw.toFixed(1) + '°  pitch ' + c.pitch.toFixed(1) + '°' + (vivo1 ? '' : '  [sin datos]'), 12, H - 34);\n  ctx.fillText('Pájaro (id 2): roll ' + p.roll.toFixed(1) + '°  pitch ' + p.pitch.toFixed(1) + '°' + (vivo2 ? '' : '  [sin datos]'), 12, H - 14);\n  requestAnimationFrame(dibujar);\n}\nconectar();\ndibujar();\n</script>\n</body>\n</html>\n",
+    "output": "str",
+    "x": 340,
+    "y": 180,
+    "wires": [
+      [
+        "e2httpres0000001"
+      ]
+    ]
+  },
+  {
+    "id": "e2httpres0000001",
+    "type": "http response",
+    "z": "e2tab000000000001",
+    "name": "",
+    "statusCode": "",
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    },
+    "x": 520,
+    "y": 180,
+    "wires": []
+  }
+]

@@ -16,22 +16,19 @@ Juego IoT "**Cazador vs. Pájaro**" con 3 ESP32-C3:
                                                 Node-RED: MongoDB (log y partidas), Telegram
 ```
 
-- **Plan por etapas:** [docs/PLAN.md](docs/PLAN.md)
-- **Lista de compra:** [docs/COMPRAS.md](docs/COMPRAS.md)
-- **Prueba de latencia (superada, ~4 ms):** [firmware/pruebas/latencia_espnow](firmware/pruebas/latencia_espnow)
+- **Plan por etapas:** [Plan/Plan.md](Plan/Plan.md) (cada etapa en `Plan/etapaN/` con su código y su GUIA.md)
+- **Lista de compra:** [Plan/etapa1/COMPRAS.md](Plan/etapa1/COMPRAS.md)
+- **Etapa 2, validación de tecnologías:** [Plan/etapa2/GUIA.md](Plan/etapa2/GUIA.md) (latencia ESP-NOW superada, ~4 ms)
 
 ## Estructura
 | Carpeta | Contenido |
 |---|---|
-| `firmware/` | Programas de los ESP32 (Arduino IDE, core ESP32 3.x). `pruebas/` = prototipos de cada tecnología |
-| `nodered/` | Flujos de Node-RED exportados (`.json`) |
-| `juego/` | Página web del juego |
-| `hardware/` | Soportes de los mandos (diseños 3D `.stl`, fotos del montaje) |
-| `docs/` | Plan, compras, memoria, manual de usuario |
+| `Plan/Plan.md` | Plan general por etapas |
+| `Plan/etapaN/` | Código de esa etapa (sketches `.ino`, scripts, flujos Node-RED `.json`, diseños 3D) y su `GUIA.md` |
 
 ## Secretos (¡importante!)
 Las contraseñas (WiFi, MQTT/MongoDB del grupo II16, token del bot de Telegram) **nunca** se suben.
-- En el firmware: copiad `firmware/secrets.example.h` como `secrets.h` (está en `.gitignore`).
+- En el firmware: en cada sketch que lo necesite hay un `secrets.example.h`; copiadlo como `secrets.h` en la misma carpeta (está en `.gitignore`).
 - En Node-RED: usad credenciales de nodo / variables de entorno, no las escribáis en los flujos.
 
 ## Cómo trabajamos con Git
