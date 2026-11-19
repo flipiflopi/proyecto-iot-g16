@@ -42,8 +42,8 @@ y la inyecta en el mismo sitio por el que llegarán los datos reales. Permite ha
 ---
 
 ## Etapa 1 — Organización y compras 🟢
-📁 Carpeta y guía: [etapa1/GUIA.md](etapa1/GUIA.md)
-- ⬜ Hacer el pedido de AliExpress → ver [etapa1/COMPRAS.md](etapa1/COMPRAS.md) (lo primero: tarda en llegar)
+📁 Carpeta y guía: [etapa01-organizacion-y-compras/GUIA.md](etapa01-organizacion-y-compras/GUIA.md)
+- ⬜ Hacer el pedido de AliExpress → ver [etapa01-organizacion-y-compras/COMPRAS.md](etapa01-organizacion-y-compras/COMPRAS.md) (lo primero: tarda en llegar)
 - ✅ Repositorio GitHub privado creado
 - ⬜ Invitar a los otros 2 integrantes (y al profesor si lo pide) como colaboradores
 - ⬜ Cada uno: clonar el repo, Arduino IDE con core ESP32 3.x, Node-RED en Docker
@@ -55,9 +55,9 @@ y la inyecta en el mismo sitio por el que llegarán los datos reales. Permite ha
 **Hecho cuando:** pedido hecho, los 3 con el entorno funcionando y el visto bueno por escrito.
 
 ## Etapa 2 — Validación de tecnologías 🟢 🔀
-📁 Carpeta y guía: [etapa2/GUIA.md](etapa2/GUIA.md)
-Pruebas pequeñas e independientes, cada una en su carpeta dentro de `etapa2/`. Código completo ✅ · pruebas en placa pendientes:
-- ✅ **Latencia ESP-NOW** (mando → base → PC): ~4 ms de media. Ver `etapa2/01_latencia_espnow`
+📁 Carpeta y guía: [etapa02-validacion-de-tecnologias/GUIA.md](etapa02-validacion-de-tecnologias/GUIA.md)
+Pruebas pequeñas e independientes, cada una en su carpeta dentro de `etapa02-validacion-de-tecnologias/`. Código completo ✅ · pruebas en placa pendientes:
+- ✅ **Latencia ESP-NOW** (mando → base → PC): ~4 ms de media. Ver `etapa02-validacion-de-tecnologias/01_latencia_espnow`
 - ⬜ **ESP-NOW unicast con ACK**: el mando conoce la MAC de la base y los disparos no se pierden
 - ⬜ **Canal automático**: el mando encuentra solo el canal WiFi de la base
 - ⬜ **MQTT** con el broker `iot.ac.uma.es` (usuario II16): publicar/suscribir, mensaje retenido y LWT
@@ -70,7 +70,7 @@ Pruebas pequeñas e independientes, cada una en su carpeta dentro de `etapa2/`. 
 **Hecho cuando:** cada prueba funciona sola y queda documentada.
 
 ## Etapa 3 — Prototipo de puntería con IMU 🔴
-📁 Carpeta y guía: [etapa3/GUIA.md](etapa3/GUIA.md)
+📁 Carpeta y guía: [etapa03-punteria-con-imu/GUIA.md](etapa03-punteria-con-imu/GUIA.md)
 - ⬜ Leer los 2 BNO085 (cazador y pájaro; mismo sensor y misma librería) → implementar `SENSOR_BNO085`
 - ⬜ Orientación estable: cuaternión/ángulos; medir la **deriva** en 5-10 min
 - ⬜ Calibración: apuntar al centro + botón; botón de recentrar
@@ -84,7 +84,7 @@ Pruebas pequeñas e independientes, cada una en su carpeta dentro de `etapa2/`. 
 dejar escrito el código de lectura y el de calibración, y la página web con el mando virtual.
 
 ## Etapa 4 — Firmware común de los nodos 🟢 🔀
-📁 Carpeta y guía: [etapa4/GUIA.md](etapa4/GUIA.md)
+📁 Carpeta y guía: [etapa04-firmware-comun/GUIA.md](etapa04-firmware-comun/GUIA.md)
 Un único firmware; el rol (BASE / CAZADOR / PÁJARO) se decide por configuración (MAC o memoria).
 - ⬜ Estructura FreeRTOS: tareas de sensor, comunicaciones, actuadores y botón; colas entre ellas
 - ⬜ Sensor detrás de `leerOrientacion()` con modo **simulado** y modo **BNO085**
@@ -95,7 +95,7 @@ Un único firmware; el rol (BASE / CAZADOR / PÁJARO) se decide por configuraci�
 - ⬜ Configuración por mensaje (`config`) y guardada en flash (persistente)
 
 ## Etapa 5 — Base / pasarela 🟢 🔀
-📁 Carpeta y guía: [etapa5/GUIA.md](etapa5/GUIA.md)
+📁 Carpeta y guía: [etapa05-base-pasarela/GUIA.md](etapa05-base-pasarela/GUIA.md)
 - ⬜ ESP-NOW ↔ MQTT: publica en nombre de los mandos con los **topics obligatorios** (`II16/esp32c3-XXXX/...`)
 - ⬜ Latido de los mandos → `conexion` `online:false` si dejan de responder (equivalente a LWT)
 - ⬜ Reenvío en tiempo real al PC por USB serie
@@ -105,16 +105,16 @@ Un único firmware; el rol (BASE / CAZADOR / PÁJARO) se decide por configuraci�
 **Se prueba con** 3 placas del laboratorio: base + 2 mandos simulados.
 
 ## Etapa 6 — Juego (web servida por Node-RED) 🟢 🔀
-📁 Carpeta y guía: [etapa6/GUIA.md](etapa6/GUIA.md)
+📁 Carpeta y guía: [etapa06-juego-web/GUIA.md](etapa06-juego-web/GUIA.md)
 - ⬜ Canvas sencillo: escenario, cursor del cazador, pájaro pilotado
 - ⬜ Detección de impacto (la decide un solo sitio: el juego)
-- ⬜ Partida según las reglas de [etapa6/REGLAS.md](etapa6/REGLAS.md) (60 s, 3 vidas, puntos según el tiempo); impacto → vibración en ambos mandos
+- ⬜ Partida según las reglas de [etapa06-juego-web/REGLAS.md](etapa06-juego-web/REGLAS.md) (60 s, 3 vidas, puntos según el tiempo); impacto → vibración en ambos mandos
 - ⬜ Escenarios cargados desde MongoDB
 
 **Se prueba con** el mando virtual (ratón) en casa y con los mandos simulados en el laboratorio.
 
 ## Etapa 7 — Base de datos (Node-RED + MongoDB) 🟢 🔀
-📁 Carpeta y guía: [etapa7/GUIA.md](etapa7/GUIA.md)
+📁 Carpeta y guía: [etapa07-base-de-datos/GUIA.md](etapa07-base-de-datos/GUIA.md)
 - ⬜ Guardar con fecha el **log** de eventos: conexiones/desconexiones, disparos, impactos, órdenes, actualizaciones (con su origen)
 - ⬜ Guardar las **partidas** (jugadores, duración, puntuación) y los **escenarios**
 - ⬜ Consultas para el ranking de Telegram y para cargar los escenarios en el juego
@@ -122,19 +122,19 @@ Un único firmware; el rol (BASE / CAZADOR / PÁJARO) se decide por configuraci�
 **Se prueba con** datos de los mandos simulados (o mensajes MQTT inyectados a mano desde Node-RED).
 
 ## Etapa 8 — Telegram 🟢 🔀
-📁 Carpeta y guía: [etapa8/GUIA.md](etapa8/GUIA.md)
+📁 Carpeta y guía: [etapa08-telegram/GUIA.md](etapa08-telegram/GUIA.md)
 - ⬜ Bot: `/estado`, `/partida`, `/ranking`, `/actualizar`, control de LED/vibración
 - ⬜ Canal: resultados de partidas, récords, desconexiones, actualizaciones
 
 ## Etapa 9 — FOTA completo 🟢
-📁 Carpeta y guía: [etapa9/GUIA.md](etapa9/GUIA.md)
+📁 Carpeta y guía: [etapa09-fota/GUIA.md](etapa09-fota/GUIA.md)
 - ⬜ Base: al arrancar, por MQTT, pulsación larga y periódica (configurable, 0 = no)
 - ⬜ Mandos: orden por ESP-NOW desde la base → WiFi temporal → descarga → vuelta a ESP-NOW
 - ⬜ Versión de cada nodo consultable por Telegram (`/estado`); no actualizar durante una partida
 - ⬜ Demo: cambiar el color del LED en la v2 y `/actualizar`
 
 ## Etapa 10 — Soportes de los mandos 🟢 (diseño) / 🔴 (montaje final)
-📁 Carpeta y guía: [etapa10/GUIA.md](etapa10/GUIA.md)
+📁 Carpeta y guía: [etapa10-soportes-de-los-mandos/GUIA.md](etapa10-soportes-de-los-mandos/GUIA.md)
 Ver la sección [Soportes de los mandos](#soportes-de-los-mandos) más abajo.
 - ⬜ Elegir opción: impresión 3D o cartón / contrachapado
 - ⬜ Medir el powerbank, la placa y el módulo BNO085 (medidas del anuncio hasta que llegue)
@@ -142,13 +142,13 @@ Ver la sección [Soportes de los mandos](#soportes-de-los-mandos) más abajo.
 - ⬜ Montar y cablear; comprobar acceso al USB, al botón y que el LED se ve
 
 ## Etapa 11 — Integración y robustez 🔴
-📁 Carpeta y guía: [etapa11/GUIA.md](etapa11/GUIA.md)
+📁 Carpeta y guía: [etapa11-integracion-y-robustez/GUIA.md](etapa11-integracion-y-robustez/GUIA.md)
 - ⬜ Cambiar `SENSOR_SIMULADO` → `SENSOR_BNO085` y probar el sistema completo
 - ⬜ Pruebas de fallo: mando apagado, WiFi caída, broker caído, sensor desconectado
 - ⬜ Prueba completa de una partida de principio a fin, varias veces
 
 ## Etapa 12 — Memoria y defensa 🟢 (casi todo)
-📁 Carpeta y guía: [etapa12/GUIA.md](etapa12/GUIA.md)
+📁 Carpeta y guía: [etapa12-memoria-y-defensa/GUIA.md](etapa12-memoria-y-defensa/GUIA.md)
 - ⬜ Memoria PDF: introducción, HW (pines), SW (diagramas, FreeRTOS, robustez, librerías),
   resultados (incluida la prueba de latencia), conclusiones → se puede ir escribiendo desde ya
 - ⬜ **Manual de usuario**
@@ -180,7 +180,7 @@ Ver la sección [Soportes de los mandos](#soportes-de-los-mandos) más abajo.
 - El botón de turbo bajo el pulgar.
 
 **Notas:** preguntad si la universidad tiene impresora 3D. Primero imprimid una versión rápida y
-de baja calidad para comprobar medidas. Guardad los `.stl` en `etapa10/`.
+de baja calidad para comprobar medidas. Guardad los `.stl` en `etapa10-soportes-de-los-mandos/`.
 
 ### Opción B — Rápida: base sobre el powerbank (sin impresora)
 - Un trozo de **cartón duro, contrachapado fino o metacrilato** del tamaño del powerbank.

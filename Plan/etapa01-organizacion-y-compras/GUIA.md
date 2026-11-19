@@ -6,7 +6,7 @@
 - [ ] **Pedido de AliExpress** → [COMPRAS.md](COMPRAS.md). Es lo primero: tarda en llegar.
 - [x] Repositorio GitHub privado `flipiflopi/proyecto-iot-g16`
 - [ ] Invitar a los otros 2 integrantes como colaboradores (GitHub → *Settings → Collaborators*)
-- [ ] Cada uno: `git clone`, Arduino IDE 2 con esp32 3.x, librerías y Python (ver [etapa 2](../etapa2/GUIA.md#preparación-una-sola-vez)), Node-RED en Docker
+- [ ] Cada uno: `git clone`, Arduino IDE 2 con esp32 3.x, librerías y Python (ver [etapa 2](../etapa02-validacion-de-tecnologias/GUIA.md#preparación-una-sola-vez)), Node-RED en Docker
 - [ ] Credenciales del grupo **II16** (Campus Virtual → "Credenciales del grupo"): usuario/clave para MQTT y MongoDB → solo en `secrets.h`, nunca en el repo
 - [ ] **Bot de Telegram**: hablar con `@BotFather` → `/newbot` → guardar el token (fuera del repo)
 - [ ] **Canal de difusión** de Telegram, con el bot como administrador

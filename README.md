@@ -16,15 +16,15 @@ Juego IoT "**Cazador vs. Pájaro**" con 3 ESP32-C3:
                                                 Node-RED: MongoDB (log y partidas), Telegram
 ```
 
-- **Plan por etapas:** [Plan/Plan.md](Plan/Plan.md) (cada etapa en `Plan/etapaN/` con su código y su GUIA.md)
-- **Lista de compra:** [Plan/etapa1/COMPRAS.md](Plan/etapa1/COMPRAS.md)
-- **Etapa 2, validación de tecnologías:** [Plan/etapa2/GUIA.md](Plan/etapa2/GUIA.md) (latencia ESP-NOW superada, ~4 ms)
+- **Plan por etapas:** [Plan/Plan.md](Plan/Plan.md) (cada etapa en `Plan/etapaNN-descripcion/` con su código y su GUIA.md)
+- **Lista de compra:** [Plan/etapa01-organizacion-y-compras/COMPRAS.md](Plan/etapa01-organizacion-y-compras/COMPRAS.md)
+- **Etapa 2, validación de tecnologías:** [Plan/etapa02-validacion-de-tecnologias/GUIA.md](Plan/etapa02-validacion-de-tecnologias/GUIA.md) (latencia ESP-NOW superada, ~4 ms)
 
 ## Estructura
 | Carpeta | Contenido |
 |---|---|
 | `Plan/Plan.md` | Plan general por etapas |
-| `Plan/etapaN/` | Código de esa etapa (sketches `.ino`, scripts, flujos Node-RED `.json`, diseños 3D) y su `GUIA.md` |
+| `Plan/etapaNN-descripcion/` | Código de esa etapa (sketches `.ino`, scripts, flujos Node-RED `.json`, diseños 3D) y su `GUIA.md` |
 
 ## Secretos (¡importante!)
 Las contraseñas (WiFi, MQTT/MongoDB del grupo II16, token del bot de Telegram) **nunca** se suben.
