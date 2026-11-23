@@ -1,6 +1,6 @@
 # Etapa 2 — Validación de tecnologías (sin sensores)
 
-> **Estado:** código completo ✅ · compilado para ESP32-C3 ✅ · pruebas en placa: 01, 03-08 hechas ✅, 02 **pendiente** · [prioridades](#prioridad-de-las-pruebas)
+> **Estado:** código completo ✅ · compilado para ESP32-C3 ✅ · pruebas en placa: 01, 03-08 hechas ✅, 02 **pendiente** · **09 nueva, pendiente** (por el [cambio de arquitectura](../ARQUITECTURA.md)) · [prioridades](#prioridad-de-las-pruebas)
 
 Objetivo: comprobar, **una por una y por separado**, todas las tecnologías del proyecto antes de
 juntarlas. Ninguna prueba necesita las IMU (BNO055 y MPU6050): todo se hace con las ESP32-C3 del laboratorio.
@@ -15,6 +15,7 @@ juntarlas. Ninguna prueba necesita las IMU (BNO055 y MPU6050): todo se hace con 
 | 06 | [Botón BOOT](#06--botón-boot-simple-doble-y-larga) | Pulsación simple / doble / larga con antirrebote | 1 | ✅ |
 | 07 | [LED RGB](#07--led-rgb-gradual) | Cambios graduales de color e intensidad | 1 | ✅ |
 | 08 | [Mandos → web](#08--mandos--base--pc--node-red--web) | La cadena completa hasta una página web en Node-RED | 3 | ✅ |
+| 09 | [Base con ESP-NOW + web + MQTT](#09--base-con-esp-now--web--mqtt-a-la-vez) | La base recibe los mandos, sirve la web con WebSocket a 50 Hz y usa MQTT, todo a la vez en el hotspot | 3 | ⬜ (código pendiente) |
 
 Las pruebas son independientes: cada integrante puede hacer unas distintas.
 
@@ -24,7 +25,7 @@ falla tarde, rompe el proyecto. El resto se comprueba rápido y sin protocolo.
 
 | Prioridad | Pruebas | Por qué |
 |---|---|---|
-| 🔴 **Alta** (hacerlas completas) | **02**, **03**, **08** (y 01, ya hecha) | Radio y red: el cambio de canal de la base al conectarse a la WiFi (02), el broker, la clave y los permisos del grupo (03) y la cadena de tiempo real del juego (08). Si fallan en la integración, son difíciles de diagnosticar |
+| 🔴 **Alta** (hacerlas completas) | **02**, **09**, **03**, **08** (y 01, ya hecha) | Radio y red: el cambio de canal de la base al conectarse a la WiFi (02), la base haciendo ESP-NOW + web + MQTT a la vez (09, nueva arquitectura), el broker, la clave y los permisos del grupo (03) y la cadena de tiempo real del juego (08). Si fallan en la integración, son difíciles de diagnosticar |
 | 🟡 **Baja** (comprobación rápida) | **06**, **07** | Código local, sin radio ni red. Se vuelve a montar en la **etapa 4 (firmware común)**. Basta con verlas funcionar un par de minutos en una C3 y anotar "funciona"; no hace falta el protocolo de 20 pulsaciones |
 | ✅ **Hecha** | **05** | Superada en ESP32 clásica (ver *Resultados*). Se da por buena: el esqueleto se reescribe en la etapa 4 |
 | ⏩ **Se pasa a la etapa 9** | **04** | En la etapa 9 se hace la FOTA con el servidor de la uni; probarla antes con un servidor en el PC duplica trabajo. Opcional si sobra tiempo |
@@ -32,7 +33,7 @@ falla tarde, rompe el proyecto. El resto se comprueba rápido y sin protocolo.
 Probar en la **ESP32 clásica** solo sirve para lo que no depende de la placa (red, MQTT, lógica):
 tiene otro chip USB, otros pines y no tiene LED RGB, así que no garantiza nada de la C3.
 
-Orden recomendado: **03** (vale con cualquier ESP32) → **02** → **08** → 06 y 07 rápidas en el laboratorio.
+Orden recomendado: **03** (vale con cualquier ESP32) → **02** → **08** → 06 y 07 rápidas en el laboratorio → **09** (depende de la 02).
 
 ---
 
@@ -314,6 +315,32 @@ La página dibuja el **punto de mira** del cazador (hace círculos) y el **avió
 
 ---
 
+## 09 · Base con ESP-NOW + web + MQTT a la vez
+> **Nueva (2026-11-23)**, por el [cambio de arquitectura](../ARQUITECTURA.md): el juego lo sirve la base, no Node-RED.
+> **Código pendiente** (carpeta `09_base_web/`).
+
+**Placas:** 3 (base + 2 mandos). Los mandos son los `MandoSimulado` de la 08, adaptados para buscar el canal como en la 02.
+Además hace falta un **hotspot de móvil o router** (2,4 GHz, WPA2-Personal) y el PC conectado a esa WiFi.
+
+**Qué valida:** lo único nuevo y con riesgo de la arquitectura elegida. La base, a la vez:
+1. Está conectada como cliente a la WiFi del hotspot (canal impuesto por el router).
+2. Recibe los 2 mandos por **ESP-NOW** a 50 Hz en ese mismo canal.
+3. Sirve la página del juego (desde LittleFS, con `ESPAsyncWebServer`) y envía las posiciones por **WebSocket a 50 Hz**.
+4. Publica y recibe por **MQTT** (`iot.ac.uma.es`) sin cortar lo anterior.
+
+**Qué medir**
+- msg/s que llegan al navegador (la página los muestra, como en la 08) y pérdidas ESP-NOW de cada mando.
+- Fluidez durante **5 min**, con 1 y con 2 navegadores abiertos.
+- Que un mensaje MQTT (p. ej. `II16/juego/orden` = `start`) llega a la base y la página lo refleja.
+- Heap libre y pila mínima de las tareas, para ver si hay fugas (como en la 05).
+- Disparo y desconexión de un mando, como en la 08.
+
+**✅ Superada si:** ~50 msg/s por mando en el navegador, pérdidas < 2 %, fluido 5 min con 2 navegadores,
+MQTT funcionando a la vez, heap estable y sin reinicios.
+**Si falla:** plan B = juego en Node-RED con los datos por USB (la 08, ya superada).
+
+---
+
 ## Reparto de tareas: antes del laboratorio (3 PCs + 1 ESP32 clásica)
 
 Fuera del laboratorio solo tenemos **3 PCs y 1 ESP32 clásica** (no C3). Con eso se puede adelantar
@@ -390,6 +417,7 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 | 06 | | | ✅ | Marcada como hecha |
 | 07 | | | ✅ | Marcada como hecha |
 | 08 | 2026-11-23 | Todos | ✅ | **Con placas (3 ESP32-C3):** base en COM19 del portátil, cazador (`ID_MANDO 1`) y pájaro (`ID_MANDO 2`) alimentados por USB, canal 1. Puente `python puente_serie_udp.py COM19 127.0.0.1 5006`: **99-101 msg/s** reenviados a Node-RED; línea `BASE:` **~250 paquetes por mando cada 5 s (50 Hz)** y **0-1 perdidos (≤ 0,4 %)**. Web fluida durante 1 min, sin tirones; disparo (BOOT del cazador) visible al instante; al desconectar el pájaro sale gris y quieto, y vuelve solo al reconectarlo. Antes, Miguel probó la parte sin placas (simulador → web): ~97 msg/s con Python nativo (~81 con el simulador en Docker, que envía más despacio) |
+| 09 | | | | msg/s en el navegador, pérdidas, 5 min con 2 navegadores, MQTT, heap: |
 
 ### Problemas encontrados y soluciones
 - **08 · Node-RED sin el puerto UDP** (Miguel): el Node-RED ya existente (con `docker-compose.yml`) solo publicaba el 1880, así que no le llegaban los datos de los mandos.
@@ -412,6 +440,6 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
   o usar `git config --global core.longpaths true`.
 
 ## Etapa 2 terminada cuando
-- [ ] Las pruebas de prioridad alta (01, 02, 03, 08) superadas y anotadas en la tabla
+- [ ] Las pruebas de prioridad alta (01, 02, 03, 08 y la nueva 09) superadas y anotadas en la tabla
 - [ ] 06 y 07 comprobadas en una C3 (rápido)
 - [ ] Problemas encontrados y sus soluciones escritos aquí (servirán para la memoria)
