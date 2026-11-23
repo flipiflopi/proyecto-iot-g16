@@ -1,6 +1,6 @@
 # Etapa 2 — Validación de tecnologías (sin sensores)
 
-> **Estado:** código completo ✅ · compilado para ESP32-C3 ✅ · pruebas en placa: 01, 03-08 hechas ✅, 02 **pendiente** · **09 nueva, pendiente** (por el [cambio de arquitectura](../ARQUITECTURA.md)) · [prioridades](#prioridad-de-las-pruebas)
+> **Estado:** código completo ✅ · compilado para ESP32-C3 ✅ · pruebas en placa: 01, 03-08 hechas ✅, 02 **pendiente** · **09 nueva, pendiente** (código escrito, sin compilar) (por el [cambio de arquitectura](../ARQUITECTURA.md)) · [prioridades](#prioridad-de-las-pruebas)
 
 Objetivo: comprobar, **una por una y por separado**, todas las tecnologías del proyecto antes de
 juntarlas. Ninguna prueba necesita las IMU (BNO055 y MPU6050): todo se hace con las ESP32-C3 del laboratorio.
@@ -15,7 +15,7 @@ juntarlas. Ninguna prueba necesita las IMU (BNO055 y MPU6050): todo se hace con 
 | 06 | [Botón BOOT](#06--botón-boot-simple-doble-y-larga) | Pulsación simple / doble / larga con antirrebote | 1 | ✅ |
 | 07 | [LED RGB](#07--led-rgb-gradual) | Cambios graduales de color e intensidad | 1 | ✅ |
 | 08 | [Mandos → web](#08--mandos--base--pc--node-red--web) | La cadena completa hasta una página web en Node-RED | 3 | ✅ |
-| 09 | [Base con ESP-NOW + web + MQTT](#09--base-con-esp-now--web--mqtt-a-la-vez) | La base recibe los mandos, sirve la web con WebSocket a 50 Hz y usa MQTT, todo a la vez en el hotspot | 3 | ⬜ (código pendiente) |
+| 09 | [Base con ESP-NOW + web + MQTT](#09--base-con-esp-now--web--mqtt-a-la-vez) | La base recibe los mandos, sirve la web con WebSocket a 50 Hz y usa MQTT, todo a la vez en el hotspot | 3 | ⬜ (código escrito, sin probar) |
 
 Las pruebas son independientes: cada integrante puede hacer unas distintas.
 
@@ -317,27 +317,60 @@ La página dibuja el **punto de mira** del cazador (hace círculos) y el **avió
 
 ## 09 · Base con ESP-NOW + web + MQTT a la vez
 > **Nueva (2026-11-23)**, por el [cambio de arquitectura](../ARQUITECTURA.md): el juego lo sirve la base, no Node-RED.
-> **Código pendiente** (carpeta `09_base_web/`).
+> Código escrito, **todavía sin compilar ni probar** en placa.
 
-**Placas:** 3 (base + 2 mandos). Los mandos son los `MandoSimulado` de la 08, adaptados para buscar el canal como en la 02.
-Además hace falta un **hotspot de móvil o router** (2,4 GHz, WPA2-Personal) y el PC conectado a esa WiFi.
+**Carpeta:** `09_base_web/` · **Placas:** 3 (base + 2 mandos)
+- `BaseWeb/`: la base. `BaseWeb.ino` + `pagina.h` (la página, la de la 08 con un panel de estadísticas) + `secrets.example.h`.
+- `MandoWeb/`: el `MandoSimulado` de la 08 con la búsqueda de canal de la 02. Envía **unicast con ACK** a la base.
+
+Además hace falta un **hotspot de móvil o router** (2,4 GHz, WPA2-Personal; **no eduroam**) y el PC conectado a esa WiFi.
 
 **Qué valida:** lo único nuevo y con riesgo de la arquitectura elegida. La base, a la vez:
 1. Está conectada como cliente a la WiFi del hotspot (canal impuesto por el router).
-2. Recibe los 2 mandos por **ESP-NOW** a 50 Hz en ese mismo canal.
-3. Sirve la página del juego (desde LittleFS, con `ESPAsyncWebServer`) y envía las posiciones por **WebSocket a 50 Hz**.
-4. Publica y recibe por **MQTT** (`iot.ac.uma.es`) sin cortar lo anterior.
+2. Recibe los 2 mandos por **ESP-NOW** a 50 Hz en ese mismo canal (los mandos lo buscan solos).
+3. Sirve la página del juego y envía las posiciones por **WebSocket a 50 Hz**.
+   (Para la prueba, la página va en la flash dentro de `pagina.h`. En el juego final irá en LittleFS.)
+4. Publica `II16/juego/estado` cada 5 s y escucha `II16/juego/orden` por **MQTT** (`iot.ac.uma.es`).
 
-**Qué medir**
-- msg/s que llegan al navegador (la página los muestra, como en la 08) y pérdidas ESP-NOW de cada mando.
-- Fluidez durante **5 min**, con 1 y con 2 navegadores abiertos.
-- Que un mensaje MQTT (p. ej. `II16/juego/orden` = `start`) llega a la base y la página lo refleja.
-- Heap libre y pila mínima de las tareas, para ver si hay fugas (como en la 05).
-- Disparo y desconexión de un mando, como en la 08.
+**Librerías** (Gestor de librerías, buscad **"ESP32Async"**): **"ESP Async WebServer"** y **"Async TCP"**, las dos de *ESP32Async*.
+No instaléis las antiguas de me-no-dev: dan errores con el core 3.x. `PubSubClient` ya está (prueba 03).
+
+**Pasos**
+1. **Hotspot:** activad el del móvil en **2,4 GHz** (en Android: *Banda AP → 2,4 GHz*; en iPhone: *Maximizar compatibilidad*). Conectad el PC a esa WiFi.
+2. **Base:** en `BaseWeb/` copiad `secrets.example.h` como `secrets.h` y rellenad la WiFi y la clave MQTT del grupo.
+   Subid `BaseWeb.ino` y abrid el monitor a **115200**. Debe salir:
+   ```
+   Conectada. IP 192.168.x.x · canal N · RSSI -xx dBm
+   [MQTT] Conectando a iot.ac.uma.es como esp32c3-XXXXXX... OK. Suscrito a II16/juego/orden
+   >>> Abrid en el navegador:  http://192.168.x.x/
+   ```
+   Apuntad la **IP** y el **canal**.
+3. **Mandos:** subid `MandoWeb.ino` con `#define ID_MANDO 1` a una placa y con `ID_MANDO 2` a otra (después dejadlo en 1).
+   En su monitor (115200) deben recorrer canales hasta `Base encontrada: ... en el canal N`. Después, cada 5 s:
+   `5 s: 250 confirmados, 0 sin ACK`.
+4. **Navegador:** en el PC (conectado al hotspot), abrid `http://<IP de la base>/`.
+   Arriba: `conectado`, **~100 msg/s** y el panel de la base: paquetes/s y pérdidas de cada mando, WebSocket, heap, canal, RSSI y MQTT.
+5. **5 minutos con 1 navegador:** dejadlo correr. Mirad en el monitor de la base, cada 5 s, que los paquetes se mantienen en
+   ~250 por mando, las pérdidas son bajas, los `salt` (saltados) están en 0 o casi, y el **heap no baja** poco a poco.
+6. **5 minutos con 2 navegadores:** abrid la misma dirección en otra pestaña, o mejor en un móvil conectado al hotspot. Lo mismo.
+7. **MQTT:** publicad en `II16/juego/orden` el texto `start` (con MQTT Explorer, como en la 03, o con un nodo *mqtt out* en Node-RED).
+   En la página debe salir `Orden MQTT recibida: "start"`, sin que se corte el movimiento.
+   En `II16/juego/estado` debe llegar un JSON cada 5 s.
+8. **Disparo y desconexión:** BOOT en el mando 1 → destello. Desenchufad un mando → `[sin datos]` en gris; al enchufarlo
+   vuelve a buscar la base y reaparece solo.
+9. **Recuperación de la base:** pulsad RST en la base. Los mandos dirán `La base no responde` y la volverán a encontrar;
+   la página se reconecta sola.
 
 **✅ Superada si:** ~50 msg/s por mando en el navegador, pérdidas < 2 %, fluido 5 min con 2 navegadores,
 MQTT funcionando a la vez, heap estable y sin reinicios.
 **Si falla:** plan B = juego en Node-RED con los datos por USB (la 08, ya superada).
+
+**Problemas típicos**
+- *La base no conecta a la WiFi:* el hotspot está en 5 GHz o es WPA3; ponedlo en 2,4 GHz y WPA2. Probad a acercarla.
+- *Error de compilación en `ESPAsyncWebServer.h` o `AsyncTCP.h`:* está instalada la versión de me-no-dev; desinstaladla e instalad las de ESP32Async.
+- *El navegador no abre la página:* el PC no está en el hotspot, o el hotspot aísla a los clientes (algunos móviles lo hacen: buscad *aislamiento de AP* y desactivadlo).
+- *Los mandos recorren los canales sin parar:* la base no ha arrancado o no conectó a la WiFi (mirad su monitor).
+- *Muchos `salt` o pérdidas con 2 navegadores:* anotadlo (es justo lo que se quiere saber) y probad con un solo navegador.
 
 ---
 
