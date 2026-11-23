@@ -1,6 +1,6 @@
 # Etapa 2 — Validación de tecnologías (sin sensores)
 
-> **Estado:** código completo ✅ · compilado para ESP32-C3 ✅ · pruebas en placa: 01 y 03-07 hechas ✅, 02 y 08 **pendientes** · [prioridades](#prioridad-de-las-pruebas)
+> **Estado:** código completo ✅ · compilado para ESP32-C3 ✅ · pruebas en placa: 01, 03-08 hechas ✅, 02 **pendiente** · [prioridades](#prioridad-de-las-pruebas)
 
 Objetivo: comprobar, **una por una y por separado**, todas las tecnologías del proyecto antes de
 juntarlas. Ninguna prueba necesita las IMU (BNO055 y MPU6050): todo se hace con las ESP32-C3 del laboratorio.
@@ -14,7 +14,7 @@ juntarlas. Ninguna prueba necesita las IMU (BNO055 y MPU6050): todo se hace con 
 | 05 | [FreeRTOS](#05--esqueleto-freertos) | Tareas, colas, temporizador, mutex | 1 | ✅ 10 min estable |
 | 06 | [Botón BOOT](#06--botón-boot-simple-doble-y-larga) | Pulsación simple / doble / larga con antirrebote | 1 | ✅ |
 | 07 | [LED RGB](#07--led-rgb-gradual) | Cambios graduales de color e intensidad | 1 | ✅ |
-| 08 | [Mandos → web](#08--mandos--base--pc--node-red--web) | La cadena completa hasta una página web en Node-RED | 3 | ⬜ |
+| 08 | [Mandos → web](#08--mandos--base--pc--node-red--web) | La cadena completa hasta una página web en Node-RED | 3 | ✅ |
 
 Las pruebas son independientes: cada integrante puede hacer unas distintas.
 
@@ -374,7 +374,7 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 ### Después, en el laboratorio (con las 3 C3, todos)
 - [ ] **02** Emparejamiento ESP-NOW (2 placas).
 - [ ] **06** y **07**, comprobación rápida en una C3 con los pines originales (unos minutos, sin protocolo).
-- [ ] **08** completa: base + 2 mandos simulados → puente → Node-RED → web.
+- [x] **08** completa: base + 2 mandos simulados → puente → Node-RED → web (2026-11-23, ✅).
 
 ---
 
@@ -389,7 +389,7 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 | 05 | 2026-11-23 | Iván | ✅ | ESP32 clásica (`PIN_BOTON = 0`). 605 s sin reinicios; sensor 100 Hz y envíos 50 Hz estables; latido cada 2 s; 6 disparos con latencia 0 ms; heap libre constante (320468 B, sin fugas). Pila libre mínima: sensor 2276, coms 2028, botón 1468, eventos 2620 (**bytes**, aunque el programa diga "palabras": en ESP32 `uxTaskGetStackHighWaterMark` devuelve bytes). 1 línea con bytes basura en el serie en t≈157 s, sin reinicio: fallo puntual de la transmisión USB, no mezcla de mensajes |
 | 06 | | | ✅ | Marcada como hecha |
 | 07 | | | ✅ | Marcada como hecha |
-| 08 | 2026-11-23 | Miguel | 🟡 parte Node-RED ✅ | **Solo la parte sin placas** (simulador → Node-RED → web): "conectado", **~97 msg/s** (96-98) con el simulador en Python nativo, punto de mira girando y avión balanceándose. (Con el simulador dentro de Docker salían ~81 msg/s: el contenedor envía más despacio, no era pérdida en Node-RED.) **Falta la prueba completa con placas** en el laboratorio (msg/s por mando y pérdidas) |
+| 08 | 2026-11-23 | Todos | ✅ | **Con placas (3 ESP32-C3):** base en COM19 del portátil, cazador (`ID_MANDO 1`) y pájaro (`ID_MANDO 2`) alimentados por USB, canal 1. Puente `python puente_serie_udp.py COM19 127.0.0.1 5006`: **99-101 msg/s** reenviados a Node-RED; línea `BASE:` **~250 paquetes por mando cada 5 s (50 Hz)** y **0-1 perdidos (≤ 0,4 %)**. Web fluida durante 1 min, sin tirones; disparo (BOOT del cazador) visible al instante; al desconectar el pájaro sale gris y quieto, y vuelve solo al reconectarlo. Antes, Miguel probó la parte sin placas (simulador → web): ~97 msg/s con Python nativo (~81 con el simulador en Docker, que envía más despacio) |
 
 ### Problemas encontrados y soluciones
 - **08 · Node-RED sin el puerto UDP** (Miguel): el Node-RED ya existente (con `docker-compose.yml`) solo publicaba el 1880, así que no le llegaban los datos de los mandos.
@@ -401,6 +401,12 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
   Para el laboratorio hace falta **instalar Python** de verdad: `puente_serie_udp.py` lee el puerto COM y un contenedor no lo ve.
   **Solución definitiva:** instalar Python desde python.org (*Windows installer (64-bit)*) marcando **"Add python.exe to PATH"**,
   abrir una terminal nueva y `pip install pyserial paho-mqtt`. Con Python nativo el simulador da ~97 msg/s (en Docker, ~81).
+- **08 · Puerto UDP 5005 ocupado en el PC** (portátil del laboratorio): `docker compose up` no podía publicar el `5005/udp`
+  porque lo usa el servicio de Windows **wmpnetwk** (Uso compartido de red del Reproductor de Windows Media).
+  Solución sin tocar el servicio: publicar otro puerto del PC hacia el 5005 del contenedor (`- 5006:5005/udp` en `ports:`)
+  y lanzar el puente con ese puerto: `python puente_serie_udp.py COMx 127.0.0.1 5006`. El flujo no cambia (sigue escuchando el 5005 dentro).
+- **08 · Monitor serie de la base con caracteres raros**: la base escribe a **921600 baudios**; con el monitor a 115200 se ve basura.
+  Poner el monitor a 921600 (y cerrarlo antes de arrancar el puente).
 - **Rutas demasiado largas en Windows**: si el repositorio se clona en una carpeta muy profunda, `git clone` falla
   (`Filename too long`) y Windows PowerShell no encuentra los archivos. Solución: clonar en una ruta corta (p. ej. `C:\iot\`)
   o usar `git config --global core.longpaths true`.
