@@ -3,7 +3,7 @@
 > **Estado:** código completo ✅ · compilado para ESP32-C3 ✅ · pruebas en placa: 01 y 03-07 hechas ✅, 02 y 08 **pendientes** · [prioridades](#prioridad-de-las-pruebas)
 
 Objetivo: comprobar, **una por una y por separado**, todas las tecnologías del proyecto antes de
-juntarlas. Ninguna prueba necesita los BNO085: todo se hace con las ESP32-C3 del laboratorio.
+juntarlas. Ninguna prueba necesita las IMU (BNO055 y MPU6050): todo se hace con las ESP32-C3 del laboratorio.
 
 | # | Prueba | Qué valida | Placas | Estado |
 |---|---|---|---|---|

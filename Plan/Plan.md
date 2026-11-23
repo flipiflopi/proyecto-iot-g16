@@ -12,12 +12,12 @@ Leyenda: ✅ hecho · ⬜ pendiente · 🟢 se puede hacer **sin los sensores** 
 
 ## Mientras llegan los sensores: qué se puede hacer
 
-**Casi todo.** Solo necesitan los BNO085 la **etapa 3** (puntería real) y el **montaje final**.
+**Casi todo.** Solo necesitan las IMU (BNO055 y MPU6050) la **etapa 3** (puntería real) y el **montaje final**.
 El resto se hace con las ESP32 del laboratorio, que ya traen todo lo necesario para probar:
 
 | Lo que habrá en el proyecto | Cómo se prueba sin comprarlo |
 |---|---|
-| IMU BNO085 (orientación) | **Mando simulado**: el ESP32 genera una orientación falsa (círculos, barridos) y la envía igual que el real. O un **mando virtual** con el ratón del PC |
+| IMU BNO055 (cazador) y MPU6050 (pájaro) | **Mando simulado**: el ESP32 genera una orientación falsa (círculos, barridos) y la envía igual que el real. O un **mando virtual** con el ratón del PC |
 | Gatillo / turbo | Botón **BOOT** de la placa (GPIO9) |
 | Motor de vibración (GPIO5) | La salida GPIO5 funciona igual sin nada conectado; se ve en el monitor serie o con un LED si el laboratorio tiene |
 | Estado / respuesta visual | **LED RGB** integrado de la placa |
@@ -29,7 +29,7 @@ bool leerOrientacion(Orientacion &o);   // devuelve el cuaternión / ángulos ac
 ```
 Con dos versiones, elegidas con una constante:
 - `SENSOR_SIMULADO`: genera movimiento falso (p. ej. un círculo lento para el cazador y un balanceo para el pájaro).
-- `SENSOR_BNO085`: lee el sensor real (se programa cuando llegue).
+- `SENSOR_REAL`: lee el sensor real según el rol: **BNO055** en el cazador, **MPU6050** en el pájaro (se programa cuando lleguen).
 
 Así, **todo lo demás** (ESP-NOW, base, juego, Node-RED, Telegram, FOTA) se desarrolla y se prueba
 ahora, y cuando llegue el sensor solo se cambia esa constante.
@@ -71,7 +71,7 @@ Pruebas pequeñas e independientes, cada una en su carpeta dentro de `etapa02-va
 
 ## Etapa 3 — Prototipo de puntería con IMU 🔴
 📁 Carpeta y guía: [etapa03-punteria-con-imu/GUIA.md](etapa03-punteria-con-imu/GUIA.md)
-- ⬜ Leer los 2 BNO085 (cazador y pájaro; mismo sensor y misma librería) → implementar `SENSOR_BNO085`
+- ⬜ Leer el BNO055 (cazador) y el MPU6050 (pájaro), cada uno con su librería → implementar `SENSOR_REAL`
 - ⬜ Orientación estable: cuaternión/ángulos; medir la **deriva** en 5-10 min
 - ⬜ Calibración: apuntar al centro + botón; botón de recentrar
 - ⬜ Comprobar que la **vibración del motor no estropea la lectura** de la IMU
@@ -80,14 +80,14 @@ Pruebas pequeñas e independientes, cada una en su carpeta dentro de `etapa02-va
 **Hecho cuando:** el cursor sigue bien a la mano y la deriva es aceptable con recentrado.
 ⚠️ Es el **mayor riesgo técnico**: se hace en cuanto lleguen los sensores; si falla, se replantea.
 
-**Preparable antes de que lleguen (🟢):** elegir la librería del BNO085, leer su documentación,
+**Preparable antes de que lleguen (🟢):** instalar las librerías del BNO055 y del MPU6050, leer su documentación,
 dejar escrito el código de lectura y el de calibración, y la página web con el mando virtual.
 
 ## Etapa 4 — Firmware común de los nodos 🟢 🔀
 📁 Carpeta y guía: [etapa04-firmware-comun/GUIA.md](etapa04-firmware-comun/GUIA.md)
 Un único firmware; el rol (BASE / CAZADOR / PÁJARO) se decide por configuración (MAC o memoria).
 - ⬜ Estructura FreeRTOS: tareas de sensor, comunicaciones, actuadores y botón; colas entre ellas
-- ⬜ Sensor detrás de `leerOrientacion()` con modo **simulado** y modo **BNO085**
+- ⬜ Sensor detrás de `leerOrientacion()` con modo **simulado** y modo **real** (BNO055 o MPU6050 según el rol)
 - ⬜ Protocolo de mensajes ESP-NOW (posición, disparo, impacto, órdenes, latido, versión)
 - ⬜ **LED RGB** con cambios graduales (±1 % cada X ms, configurable)
 - ⬜ **GPIO5** = motor de vibración, con lógica normal/inversa configurable
@@ -137,13 +137,13 @@ Un único firmware; el rol (BASE / CAZADOR / PÁJARO) se decide por configuraci�
 📁 Carpeta y guía: [etapa10-soportes-de-los-mandos/GUIA.md](etapa10-soportes-de-los-mandos/GUIA.md)
 Ver la sección [Soportes de los mandos](#soportes-de-los-mandos) más abajo.
 - ⬜ Elegir opción: impresión 3D o cartón / contrachapado
-- ⬜ Medir el powerbank, la placa y el módulo BNO085 (medidas del anuncio hasta que llegue)
+- ⬜ Medir el powerbank, la placa y los módulos BNO055 y MPU6050 (medidas del anuncio hasta que lleguen)
 - ⬜ Diseñar (Tinkercad / Fusion 360) o recortar los soportes
 - ⬜ Montar y cablear; comprobar acceso al USB, al botón y que el LED se ve
 
 ## Etapa 11 — Integración y robustez 🔴
 📁 Carpeta y guía: [etapa11-integracion-y-robustez/GUIA.md](etapa11-integracion-y-robustez/GUIA.md)
-- ⬜ Cambiar `SENSOR_SIMULADO` → `SENSOR_BNO085` y probar el sistema completo
+- ⬜ Cambiar `SENSOR_SIMULADO` → `SENSOR_REAL` y probar el sistema completo
 - ⬜ Pruebas de fallo: mando apagado, WiFi caída, broker caído, sensor desconectado
 - ⬜ Prueba completa de una partida de principio a fin, varias veces
 
@@ -163,8 +163,8 @@ Ver la sección [Soportes de los mandos](#soportes-de-los-mandos) más abajo.
 **Cazador: forma de pistola**
 - **Mango:** hueco a medida del powerbank (se mete por abajo; tapa o ajuste a presión).
   El cable USB sube por dentro hasta la placa.
-- **Cuerpo / "cañón":** la placa ESP32-C3 y el BNO085.
-  - El BNO085 **bien fijo** (tornillos o encaje) y **alineado con el cañón**: su orientación es la de la pistola.
+- **Cuerpo / "cañón":** la placa ESP32-C3 y el BNO055.
+  - El BNO055 **bien fijo** (tornillos o encaje) y **alineado con el cañón**: su orientación es la de la pistola.
   - Lo más lejos posible del motor de vibración, para que la vibración no ensucie la lectura.
 - **Gatillo:** el pulsador donde va el dedo índice.
 - **Motor de vibración:** en el mango o en la parte trasera, para notar el retroceso en la mano.
@@ -176,7 +176,7 @@ Ver la sección [Soportes de los mandos](#soportes-de-los-mandos) más abajo.
   o un velcro; el powerbank va debajo, como "fuselaje".
 - Opción "mando": pieza tipo **volante / mando horizontal** que se coge con las dos manos y se
   inclina; el powerbank en el centro.
-- El BNO085 en el centro y **plano**: su inclinación es la del avión.
+- El MPU6050 en el centro y **plano**: su inclinación es la del avión.
 - El botón de turbo bajo el pulgar.
 
 **Notas:** preguntad si la universidad tiene impresora 3D. Primero imprimid una versión rápida y
@@ -185,7 +185,7 @@ de baja calidad para comprobar medidas. Guardad los `.stl` en `etapa10-soportes-
 ### Opción B — Rápida: base sobre el powerbank (sin impresora)
 - Un trozo de **cartón duro, contrachapado fino o metacrilato** del tamaño del powerbank.
 - Se pega **encima del powerbank** con cinta de doble cara o bridas.
-- Encima, la placa y el BNO085 fijos con cinta de doble cara o bridas, y el motor de vibración.
+- Encima, la placa y la IMU (BNO055 o MPU6050) fijos con cinta de doble cara o bridas, y el motor de vibración.
 - Para el cazador, el pulsador en el lateral, donde caiga el dedo.
 - Para la demo funciona igual de bien; la opción A es solo más vistosa.
 
@@ -196,7 +196,7 @@ USB y botón accesibles, LED visible, y cables sujetos para que no se suelten al
 
 ## Riesgos y decisiones pendientes
 - **Puntería con IMU (deriva)** → se valida en la etapa 3 en cuanto lleguen los sensores.
-- **Vibración vs. IMU**: el motor puede meter ruido en la lectura → separarlos en el soporte y comprobarlo.
+- **Vibración vs. IMU**: el motor puede meter ruido en la lectura (y su imán desviar el magnetómetro del BNO055) → separarlos en el soporte y comprobarlo; si hace falta, BNO055 en modo IMUPLUS (sin magnetómetro).
 - **Node-RED en Docker en los 3 PCs**: si los 3 están conectados a la vez al mismo broker y a la
   misma base de datos, se duplicarán registros y mensajes de Telegram. Solo una instancia debe
   ser la "oficial"; para desarrollar, usad topics/colecciones de prueba propios o un bot distinto.

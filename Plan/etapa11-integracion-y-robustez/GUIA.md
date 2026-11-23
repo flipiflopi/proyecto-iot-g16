@@ -7,7 +7,7 @@
 Juntar todo con los sensores reales y comprobar que aguanta los fallos.
 
 ## Tareas previstas
-- [ ] Cambiar `SENSOR_SIMULADO` → `SENSOR_BNO085` y probar el sistema completo
+- [ ] Cambiar `SENSOR_SIMULADO` → `SENSOR_REAL` y probar el sistema completo
 - [ ] Pruebas de fallo: mando apagado, WiFi caída, broker caído, sensor desconectado, base reiniciada
 - [ ] Partida completa de principio a fin, varias veces seguidas
 - [ ] Anotar cada problema y su solución (para la memoria)
