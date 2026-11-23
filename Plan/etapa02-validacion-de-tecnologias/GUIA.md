@@ -1,6 +1,6 @@
 # Etapa 2 — Validación de tecnologías (sin sensores)
 
-> **Estado:** código completo ✅ · compilado para ESP32-C3 ✅ · pruebas en placa: 01 y 05 hechas, 02-04 y 06-08 **pendientes** · [prioridades](#prioridad-de-las-pruebas)
+> **Estado:** código completo ✅ · compilado para ESP32-C3 ✅ · pruebas en placa: 01 y 03-07 hechas ✅, 02 y 08 **pendientes** · [prioridades](#prioridad-de-las-pruebas)
 
 Objetivo: comprobar, **una por una y por separado**, todas las tecnologías del proyecto antes de
 juntarlas. Ninguna prueba necesita los BNO085: todo se hace con las ESP32-C3 del laboratorio.
@@ -9,11 +9,11 @@ juntarlas. Ninguna prueba necesita los BNO085: todo se hace con las ESP32-C3 del
 |---|---|---|---|---|
 | 01 | [Latencia ESP-NOW](#01--latencia-esp-now) | Que ESP-NOW es lo bastante rápido para jugar | 2 | ✅ ~4 ms |
 | 02 | [Emparejamiento ESP-NOW](#02--emparejamiento-esp-now-canal-automático--unicast-con-ack) | El mando encuentra solo a la base (canal y MAC) y los disparos llegan con confirmación | 2 | ⬜ |
-| 03 | [MQTT](#03--mqtt-con-el-broker-de-la-universidad) | Broker de la uni, topics del grupo, retenido, LWT, configuración | 1 | ⬜ |
-| 04 | [FOTA](#04--fota-actualización-por-wifi) | Actualizar el programa por WiFi | 1 | ⬜ |
+| 03 | [MQTT](#03--mqtt-con-el-broker-de-la-universidad) | Broker de la uni, topics del grupo, retenido, LWT, configuración | 1 | ✅ |
+| 04 | [FOTA](#04--fota-actualización-por-wifi) | Actualizar el programa por WiFi | 1 | ✅ |
 | 05 | [FreeRTOS](#05--esqueleto-freertos) | Tareas, colas, temporizador, mutex | 1 | ✅ 10 min estable |
-| 06 | [Botón BOOT](#06--botón-boot-simple-doble-y-larga) | Pulsación simple / doble / larga con antirrebote | 1 | ⬜ |
-| 07 | [LED RGB](#07--led-rgb-gradual) | Cambios graduales de color e intensidad | 1 | ⬜ |
+| 06 | [Botón BOOT](#06--botón-boot-simple-doble-y-larga) | Pulsación simple / doble / larga con antirrebote | 1 | ✅ |
+| 07 | [LED RGB](#07--led-rgb-gradual) | Cambios graduales de color e intensidad | 1 | ✅ |
 | 08 | [Mandos → web](#08--mandos--base--pc--node-red--web) | La cadena completa hasta una página web en Node-RED | 3 | ⬜ |
 
 Las pruebas son independientes: cada integrante puede hacer unas distintas.
@@ -380,11 +380,11 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 |---|---|---|---|---|
 | 01 | | | ✅ ~4 ms | Ver RESULTADOS.md |
 | 02 | | | | % confirmados en ráfaga: |
-| 03 | | | | Latencia MQTT media: |
-| 04 | | | ⏩ | Pasa a la etapa 9 (opcional aquí) |
+| 03 | | | ✅ | Marcada como hecha |
+| 04 | | | ✅ | Marcada como hecha (la FOTA definitiva, en la etapa 9) |
 | 05 | 2026-11-23 | Iván | ✅ | ESP32 clásica (`PIN_BOTON = 0`). 605 s sin reinicios; sensor 100 Hz y envíos 50 Hz estables; latido cada 2 s; 6 disparos con latencia 0 ms; heap libre constante (320468 B, sin fugas). Pila libre mínima: sensor 2276, coms 2028, botón 1468, eventos 2620 (**bytes**, aunque el programa diga "palabras": en ESP32 `uxTaskGetStackHighWaterMark` devuelve bytes). 1 línea con bytes basura en el serie en t≈157 s, sin reinicio: fallo puntual de la transmisión USB, no mezcla de mensajes |
-| 06 | | | | Comprobación rápida en C3 |
-| 07 | | | | Comprobación rápida en C3 |
+| 06 | | | ✅ | Marcada como hecha |
+| 07 | | | ✅ | Marcada como hecha |
 | 08 | | | | msg/s y pérdidas: |
 
 ## Etapa 2 terminada cuando
