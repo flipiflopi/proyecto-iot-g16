@@ -19,7 +19,7 @@ Todo en la misma WiFi (hotspot del móvil o router propio). Detalle y motivos: [
 
 - **Plan por etapas:** [Plan/Plan.md](Plan/Plan.md) (cada etapa en `Plan/etapaNN-descripcion/` con su código y su GUIA.md)
 - **Lista de compra:** [Plan/etapa01-organizacion-y-compras/COMPRAS.md](Plan/etapa01-organizacion-y-compras/COMPRAS.md)
-- **Etapa 2, validación de tecnologías:** [Plan/etapa02-validacion-de-tecnologias/GUIA.md](Plan/etapa02-validacion-de-tecnologias/GUIA.md) (01 y 03-08 superadas; pendientes la 02 y la nueva 09)
+- **Etapa 2, validación de tecnologías:** [Plan/etapa02-validacion-de-tecnologias/GUIA.md](Plan/etapa02-validacion-de-tecnologias/GUIA.md) (01 y 03-09 superadas; pendiente la 02)
 
 ## Estructura
 | Carpeta | Contenido |

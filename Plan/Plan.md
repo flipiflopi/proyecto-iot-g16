@@ -65,7 +65,7 @@ Pruebas pequeñas e independientes, cada una en su carpeta dentro de `etapa02-va
 - ✅ **FOTA básica** (04; la completa, en la etapa 9)
 - ✅ **FreeRTOS** (05), **botón BOOT** (06), **LED RGB** (07)
 - ✅ **Mandos → base → PC → Node-RED → web** (08): ~100 msg/s, pérdidas ≤ 0,4 %
-- ⬜ **Base con ESP-NOW + web (WebSocket 50 Hz) + MQTT a la vez** (09, nueva por el cambio de arquitectura)
+- ✅ **Base con ESP-NOW + web (WebSocket 50 Hz) + MQTT a la vez** (09, nueva por el cambio de arquitectura): funciona; arquitectura validada
 
 **Hecho cuando:** cada prueba funciona sola y queda documentada.
 
@@ -203,5 +203,5 @@ USB y botón accesibles, LED visible, y cables sujetos para que no se suelten al
   ser la "oficial"; para desarrollar, usad topics/colecciones de prueba propios o un bot distinto.
 - **Botón BOOT**: el enunciado le asigna funciones fijas; si se usa como gatillo, pedir permiso o usar un pulsador aparte.
 - **WiFi**: `infind` no conectó; eduroam no vale. **Decidido:** hotspot del móvil o router propio (2,4 GHz, WPA2); la base, el PC y el navegador en esa red (opción A de [ARQUITECTURA.md](ARQUITECTURA.md)).
-- **Base sobrecargada** (ESP-NOW + web + MQTT a la vez) → prueba 09 de la etapa 2; plan B: juego en Node-RED por USB (la 08).
+- ~~**Base sobrecargada** (ESP-NOW + web + MQTT a la vez)~~ → descartado: la prueba 09 funcionó. Plan B si hiciera falta: juego en Node-RED por USB (la 08).
 - **Impresora 3D**: si no hay, opción B (cartón/contrachapado sobre el powerbank).

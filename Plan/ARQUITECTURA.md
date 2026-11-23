@@ -58,7 +58,7 @@ Para el dashboard: **`@flowfuse/node-red-dashboard`** (Dashboard 2.0). El antigu
 - Mensajes cortos (JSON compacto o binario) y `ws.cleanupClients()` periódico.
 - Pensado para **1-2 navegadores** conectados. Con más, bajar la frecuencia.
 
-## Qué hay que validar
-Ver la **prueba 09** en [etapa02-validacion-de-tecnologias/GUIA.md](etapa02-validacion-de-tecnologias/GUIA.md#09--base-con-esp-now--web--mqtt-a-la-vez):
+## Validación ✅
+**Superada el 2026-11-23**: la base funcionó haciendo todo a la vez. Ver la **prueba 09** en [etapa02-validacion-de-tecnologias/GUIA.md](etapa02-validacion-de-tecnologias/GUIA.md#09--base-con-esp-now--web--mqtt-a-la-vez):
 la base haciendo **ESP-NOW + servidor web/WebSocket a 50 Hz + MQTT a la vez**, conectada al hotspot.
-Es el único riesgo nuevo de esta arquitectura.
+Era el único riesgo nuevo de esta arquitectura.
