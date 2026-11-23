@@ -1,6 +1,6 @@
 # Etapa 2 — Validación de tecnologías (sin sensores)
 
-> **Estado:** código completo ✅ · compilado para ESP32-C3 ✅ · pruebas en placa: 01 hecha, 02-08 **pendientes**
+> **Estado:** código completo ✅ · compilado para ESP32-C3 ✅ · pruebas en placa: 01 y 05 hechas, 02-04 y 06-08 **pendientes** · [prioridades](#prioridad-de-las-pruebas)
 
 Objetivo: comprobar, **una por una y por separado**, todas las tecnologías del proyecto antes de
 juntarlas. Ninguna prueba necesita los BNO085: todo se hace con las ESP32-C3 del laboratorio.
@@ -11,13 +11,28 @@ juntarlas. Ninguna prueba necesita los BNO085: todo se hace con las ESP32-C3 del
 | 02 | [Emparejamiento ESP-NOW](#02--emparejamiento-esp-now-canal-automático--unicast-con-ack) | El mando encuentra solo a la base (canal y MAC) y los disparos llegan con confirmación | 2 | ⬜ |
 | 03 | [MQTT](#03--mqtt-con-el-broker-de-la-universidad) | Broker de la uni, topics del grupo, retenido, LWT, configuración | 1 | ⬜ |
 | 04 | [FOTA](#04--fota-actualización-por-wifi) | Actualizar el programa por WiFi | 1 | ⬜ |
-| 05 | [FreeRTOS](#05--esqueleto-freertos) | Tareas, colas, temporizador, mutex | 1 | ⬜ |
+| 05 | [FreeRTOS](#05--esqueleto-freertos) | Tareas, colas, temporizador, mutex | 1 | ✅ 10 min estable |
 | 06 | [Botón BOOT](#06--botón-boot-simple-doble-y-larga) | Pulsación simple / doble / larga con antirrebote | 1 | ⬜ |
 | 07 | [LED RGB](#07--led-rgb-gradual) | Cambios graduales de color e intensidad | 1 | ⬜ |
 | 08 | [Mandos → web](#08--mandos--base--pc--node-red--web) | La cadena completa hasta una página web en Node-RED | 3 | ⬜ |
 
-Orden recomendado: **05 → 06 → 07** (una placa, sin red) → **02** → **03 → 04** (necesitan WiFi) → **08**.
 Las pruebas son independientes: cada integrante puede hacer unas distintas.
+
+### Prioridad de las pruebas
+No todas aportan lo mismo. Prioridad = las que prueban algo que **puede fallar de verdad** y que, si
+falla tarde, rompe el proyecto. El resto se comprueba rápido y sin protocolo.
+
+| Prioridad | Pruebas | Por qué |
+|---|---|---|
+| 🔴 **Alta** (hacerlas completas) | **02**, **03**, **08** (y 01, ya hecha) | Radio y red: el cambio de canal de la base al conectarse a la WiFi (02), el broker, la clave y los permisos del grupo (03) y la cadena de tiempo real del juego (08). Si fallan en la integración, son difíciles de diagnosticar |
+| 🟡 **Baja** (comprobación rápida) | **06**, **07** | Código local, sin radio ni red. Se vuelve a montar en la **etapa 4 (firmware común)**. Basta con verlas funcionar un par de minutos en una C3 y anotar "funciona"; no hace falta el protocolo de 20 pulsaciones |
+| ✅ **Hecha** | **05** | Superada en ESP32 clásica (ver *Resultados*). Se da por buena: el esqueleto se reescribe en la etapa 4 |
+| ⏩ **Se pasa a la etapa 9** | **04** | En la etapa 9 se hace la FOTA con el servidor de la uni; probarla antes con un servidor en el PC duplica trabajo. Opcional si sobra tiempo |
+
+Probar en la **ESP32 clásica** solo sirve para lo que no depende de la placa (red, MQTT, lógica):
+tiene otro chip USB, otros pines y no tiene LED RGB, así que no garantiza nada de la C3.
+
+Orden recomendado: **03** (vale con cualquier ESP32) → **02** → **08** → 06 y 07 rápidas en el laboratorio.
 
 ---
 
@@ -322,13 +337,13 @@ Son cambios locales para probar: al terminar, deshacedlos (`git restore <archivo
 código de `main` siga preparado para la C3.
 
 ### Iván: placa sin red (05, 06, 07)
-Empieza con la ESP32 y se la pasa a David al acabar.
-- [ ] **05 FreeRTOS** completa, con `PIN_BOTON = 0`. Dejarla 10 min y apuntar la pila libre mínima de cada tarea.
-- [ ] **06 Botón** por el monitor serie, con `PIN_BOTON = 0`. 20 pulsaciones de cada tipo y apuntar los fallos.
-- [ ] **07 LED RGB**, solo la lógica, con `PIN_RGB = 4`. Comprobar que cada orden saca **un solo** JSON
-      al terminar y que el tiempo coincide con la velocidad (`b 100` ≈ 0,7 s; con `v 50`, ≈ 5 s).
-      El color de verdad se comprueba en el laboratorio con una C3.
-- [ ] Rellenar sus filas en la tabla de resultados y anotar los problemas.
+> Actualizado según la [prioridad de las pruebas](#prioridad-de-las-pruebas): la 06 y la 07 pasan a ser
+> una comprobación rápida en el laboratorio con una C3. Iván pasa la ESP32 a David para la **03**.
+
+- [x] **05 FreeRTOS** completa, con `PIN_BOTON = 0`: 605 s sin reinicios (ver *Resultados*).
+- [ ] ~~06 Botón, 20 pulsaciones de cada tipo~~ → comprobación rápida en el laboratorio con una C3.
+- [ ] ~~07 LED RGB, solo la lógica~~ → comprobación rápida en el laboratorio con una C3 (con el LED de verdad).
+- [x] Rellenar sus filas en la tabla de resultados y anotar los problemas.
 
 ### David: placa con red (03, 04)
 Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, WPA2, con datos) y la
@@ -336,9 +351,9 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 - [ ] **03 MQTT** completa: `conexion` retenido, `datos`, `config` (`{"envia":10}`, `null`, `hola`),
       LWT al desconectar el USB y reconexión al quitar el hotspot. Miguel mira los mensajes desde su PC.
 - [ ] Medir la latencia MQTT con `python medir_latencia_mqtt.py <CHIPID>` y apuntar la media.
-- [ ] **04 FOTA** completa, con `PIN_BOTON = 0`: v1 → v2 sin cable, actualización al arrancar y robustez
-      (servidor parado, falta `firmware.bin`). El servidor (`python -m http.server 8000`) puede ser
-      el PC de Miguel, conectado al mismo hotspot.
+- [ ] *(Opcional, pasa a la etapa 9)* **04 FOTA**, con `PIN_BOTON = 0`: v1 → v2 sin cable, actualización al
+      arrancar y robustez (servidor parado, falta `firmware.bin`). El servidor (`python -m http.server 8000`)
+      puede ser el PC de Miguel, conectado al mismo hotspot.
 - [ ] Rellenar sus filas en la tabla de resultados y anotar los problemas.
 
 ### Miguel: los 3 PCs y Node-RED (preparación y 08 sin placas)
@@ -354,7 +369,7 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 
 ### Después, en el laboratorio (con las 3 C3, todos)
 - [ ] **02** Emparejamiento ESP-NOW (2 placas).
-- [ ] **07** con el LED RGB de verdad (y repetir 05 y 06 en C3, con los pines originales).
+- [ ] **06** y **07**, comprobación rápida en una C3 con los pines originales (unos minutos, sin protocolo).
 - [ ] **08** completa: base + 2 mandos simulados → puente → Node-RED → web.
 
 ---
@@ -366,12 +381,13 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 | 01 | | | ✅ ~4 ms | Ver RESULTADOS.md |
 | 02 | | | | % confirmados en ráfaga: |
 | 03 | | | | Latencia MQTT media: |
-| 04 | | | | |
-| 05 | | | | Pila libre mínima: |
-| 06 | | | | Fallos /20 (simple, doble, larga): |
-| 07 | | | | |
+| 04 | | | ⏩ | Pasa a la etapa 9 (opcional aquí) |
+| 05 | 2026-11-23 | Iván | ✅ | ESP32 clásica (`PIN_BOTON = 0`). 605 s sin reinicios; sensor 100 Hz y envíos 50 Hz estables; latido cada 2 s; 6 disparos con latencia 0 ms; heap libre constante (320468 B, sin fugas). Pila libre mínima: sensor 2276, coms 2028, botón 1468, eventos 2620 (**bytes**, aunque el programa diga "palabras": en ESP32 `uxTaskGetStackHighWaterMark` devuelve bytes). 1 línea con bytes basura en el serie en t≈157 s, sin reinicio: fallo puntual de la transmisión USB, no mezcla de mensajes |
+| 06 | | | | Comprobación rápida en C3 |
+| 07 | | | | Comprobación rápida en C3 |
 | 08 | | | | msg/s y pérdidas: |
 
 ## Etapa 2 terminada cuando
-- [ ] Las 8 pruebas superadas y anotadas en la tabla
+- [ ] Las pruebas de prioridad alta (01, 02, 03, 08) superadas y anotadas en la tabla
+- [ ] 06 y 07 comprobadas en una C3 (rápido)
 - [ ] Problemas encontrados y sus soluciones escritos aquí (servirán para la memoria)
