@@ -60,7 +60,7 @@ y la inyecta en el mismo sitio por el que llegarán los datos reales. Permite ha
 📁 Carpeta y guía: [etapa02-validacion-de-tecnologias/GUIA.md](etapa02-validacion-de-tecnologias/GUIA.md)
 Pruebas pequeñas e independientes, cada una en su carpeta dentro de `etapa02-validacion-de-tecnologias/`. Estado al 2026-11-23:
 - ✅ **Latencia ESP-NOW** (mando → base → PC): ~4 ms de media. Ver `etapa02-validacion-de-tecnologias/01_latencia_espnow`
-- ⬜ **ESP-NOW unicast con ACK + canal automático** (02): el mando encuentra solo a la base y los disparos no se pierden
+- ✅ **ESP-NOW unicast con ACK + canal automático** (02): el mando encuentra solo a la base y los disparos no se pierden (ráfaga 1000/1000, 100 %)
 - ✅ **MQTT** con el broker `iot.ac.uma.es` (usuario II16) (03)
 - ✅ **FOTA básica** (04; la completa, en la etapa 9)
 - ✅ **FreeRTOS** (05), **botón BOOT** (06), **LED RGB** (07)

@@ -1,6 +1,6 @@
 # Etapa 2 — Validación de tecnologías (sin sensores)
 
-> **Estado:** código completo ✅ · compilado para ESP32-C3 ✅ · pruebas en placa: 01, 03-09 hechas ✅, 02 **pendiente** · la 09 valida el [cambio de arquitectura](../ARQUITECTURA.md) · [prioridades](#prioridad-de-las-pruebas)
+> **Estado:** código completo ✅ · compilado para ESP32-C3 ✅ · pruebas en placa: 01-09 hechas ✅ · la 09 valida el [cambio de arquitectura](../ARQUITECTURA.md) · [prioridades](#prioridad-de-las-pruebas)
 
 Objetivo: comprobar, **una por una y por separado**, todas las tecnologías del proyecto antes de
 juntarlas. Ninguna prueba necesita las IMU (BNO055 y MPU6050): todo se hace con las ESP32-C3 del laboratorio.
@@ -8,7 +8,7 @@ juntarlas. Ninguna prueba necesita las IMU (BNO055 y MPU6050): todo se hace con 
 | # | Prueba | Qué valida | Placas | Estado |
 |---|---|---|---|---|
 | 01 | [Latencia ESP-NOW](#01--latencia-esp-now) | Que ESP-NOW es lo bastante rápido para jugar | 2 | ✅ ~4 ms |
-| 02 | [Emparejamiento ESP-NOW](#02--emparejamiento-esp-now-canal-automático--unicast-con-ack) | El mando encuentra solo a la base (canal y MAC) y los disparos llegan con confirmación | 2 | ⬜ |
+| 02 | [Emparejamiento ESP-NOW](#02--emparejamiento-esp-now-canal-automático--unicast-con-ack) | El mando encuentra solo a la base (canal y MAC) y los disparos llegan con confirmación | 2 | ✅ 100 % |
 | 03 | [MQTT](#03--mqtt-con-el-broker-de-la-universidad) | Broker de la uni, topics del grupo, retenido, LWT, configuración | 1 | ✅ |
 | 04 | [FOTA](#04--fota-actualización-por-wifi) | Actualizar el programa por WiFi | 1 | ✅ |
 | 05 | [FreeRTOS](#05--esqueleto-freertos) | Tareas, colas, temporizador, mutex | 1 | ✅ 10 min estable |
@@ -432,7 +432,7 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 - [x] Anotar en la tabla los problemas de instalación (sirven para la memoria). Iván y David: sin problemas.
 
 ### Después, en el laboratorio (con las 3 C3, todos)
-- [ ] **02** Emparejamiento ESP-NOW (2 placas).
+- [x] **02** Emparejamiento ESP-NOW (2 placas) (2026-11-23, Miguel, ✅).
 - [ ] **06** y **07**, comprobación rápida en una C3 con los pines originales (unos minutos, sin protocolo).
 - [x] **08** completa: base + 2 mandos simulados → puente → Node-RED → web (2026-11-23, ✅).
 
@@ -443,7 +443,7 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 | # | Fecha | Quién | Resultado | Notas |
 |---|---|---|---|---|
 | 01 | | | ✅ ~4 ms | Ver RESULTADOS.md |
-| 02 | | | | % confirmados en ráfaga: |
+| 02 | 2026-11-23 | Miguel | ✅ 100 % | 2 ESP32-C3 (base `58:CF:79:D8:4B:18` en COM6, mando `58:CF:79:DB:05:AC` en COM13). **Canal automático:** el mando encuentra la base en el canal 6 (sin WiFi) y en el canal 1 (base conectada al hotspot, `CONECTAR_WIFI 1`) sin tocar el mando. **Disparos** unicast confirmados. **Ráfaga: 1000/1000 confirmados (100 %); la base recibe 1000, 0 duplicados.** **Recuperación:** con la base desconectada fallan los disparos (#1007-#1014) y al reconectarla vuelven a confirmarse solos (#1015), sin reiniciar el mando (no se llegó a los 10 fallos que lanzan la búsqueda de canal). En el laboratorio la base también respondió a mandos de otros grupos (otras MAC), sin afectar a los resultados |
 | 03 | | | ✅ | Marcada como hecha |
 | 04 | | | ✅ | Marcada como hecha (la FOTA definitiva, en la etapa 9) |
 | 05 | 2026-11-23 | Iván | ✅ | ESP32 clásica (`PIN_BOTON = 0`). 605 s sin reinicios; sensor 100 Hz y envíos 50 Hz estables; latido cada 2 s; 6 disparos con latencia 0 ms; heap libre constante (320468 B, sin fugas). Pila libre mínima: sensor 2276, coms 2028, botón 1468, eventos 2620 (**bytes**, aunque el programa diga "palabras": en ESP32 `uxTaskGetStackHighWaterMark` devuelve bytes). 1 línea con bytes basura en el serie en t≈157 s, sin reinicio: fallo puntual de la transmisión USB, no mezcla de mensajes |
@@ -474,8 +474,14 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 - **Rutas demasiado largas en Windows**: si el repositorio se clona en una carpeta muy profunda, `git clone` falla
   (`Filename too long`) y Windows PowerShell no encuentra los archivos. Solución: clonar en una ruta corta (p. ej. `C:\iot\`)
   o usar `git config --global core.longpaths true`.
+- **02 · La subida se corta a mitad** (Miguel): `Lost connection, retrying...` y `Failed to write to target RAM (result was 0107: Checksum error)`.
+  Solución: *Herramientas → Upload Speed* → **115200** (en vez de 921600); si sigue, otro cable o puerto USB sin hub, o BOOT pulsado al conectar.
+  Tras una subida cortada, la placa puede arrancar un programa antiguo (`invalid magic byte`): se arregla al completar la subida.
+- **02 · Mandos de otros grupos**: la base responde a cualquier mando que la busque con el mismo programa (salen otras MAC en
+  `[EMPAREJAMIENTO]`). Para la prueba, comprobar que los eventos vienen de la MAC de vuestro mando. En el proyecto final
+  habrá que filtrar por las MAC conocidas o por un identificador de grupo.
 
 ## Etapa 2 terminada cuando
-- [ ] Las pruebas de prioridad alta (01, 02, 03, 08 y la nueva 09) superadas y anotadas en la tabla (falta la 02)
+- [x] Las pruebas de prioridad alta (01, 02, 03, 08 y la nueva 09) superadas y anotadas en la tabla
 - [ ] 06 y 07 comprobadas en una C3 (rápido)
 - [ ] Problemas encontrados y sus soluciones escritos aquí (servirán para la memoria)
