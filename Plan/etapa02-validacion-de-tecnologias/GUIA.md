@@ -367,9 +367,9 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 - [x] **08, parte de Node-RED:** arrancar Node-RED con `-p 5005:5005/udp`, importar `flujo_etapa2.json`,
       ejecutar `python simular_mandos_udp.py` y comprobar en `http://localhost:1880/etapa2`:
       "conectado", ~100 msg/s, el punto de mira girando y el avión balanceándose.
-- [ ] Ayudar a David: en la 03, ver los mensajes con **MQTT Explorer** (`iot.ac.uma.es`, 1883, usuario
+- [x] Ayudar a David: en la 03, ver los mensajes con **MQTT Explorer** (`iot.ac.uma.es`, 1883, usuario
       `II16`); en la 04, hacer de **servidor FOTA**.
-- [ ] Anotar en la tabla los problemas de instalación (sirven para la memoria).
+- [x] Anotar en la tabla los problemas de instalación (sirven para la memoria). Iván y David: sin problemas.
 
 ### Después, en el laboratorio (con las 3 C3, todos)
 - [ ] **02** Emparejamiento ESP-NOW (2 placas).
