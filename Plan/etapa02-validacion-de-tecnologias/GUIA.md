@@ -357,13 +357,13 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 - [ ] Rellenar sus filas en la tabla de resultados y anotar los problemas.
 
 ### Miguel: los 3 PCs y Node-RED (preparación y 08 sin placas)
-- [ ] **Dejar preparados los 3 PCs** (ver *Preparación*): Arduino IDE 2 + soporte esp32 3.x,
+- [x] **Dejar preparados los 3 PCs** (ver *Preparación*): Arduino IDE 2 + soporte esp32 3.x,
       librerías `PubSubClient` y `ArduinoJson` v7, `pip install pyserial paho-mqtt`, y Docker.
       Probar que cada PC compila un sketch para **ESP32C3 Dev Module**, para no perder tiempo en el laboratorio.
       - [x] PC de Miguel (2026-11-23): esp32 3.3.12, `PubSubClient` 2.8, `ArduinoJson` 7.4.3, Python 3.14.10 con
             `pyserial` 3.5 y `paho-mqtt` 2.2.0, Docker con Node-RED. `NodoMQTT` (03) compila para la C3 (74 % flash, 11 % RAM)
-      - [ ] PC de Iván
-      - [ ] PC de David
+      - [x] PC de Iván (2026-11-23, todo instalado según el grupo)
+      - [x] PC de David (2026-11-23, todo instalado según el grupo)
 - [x] **08, parte de Node-RED:** arrancar Node-RED con `-p 5005:5005/udp`, importar `flujo_etapa2.json`,
       ejecutar `python simular_mandos_udp.py` y comprobar en `http://localhost:1880/etapa2`:
       "conectado", ~100 msg/s, el punto de mira girando y el avión balanceándose.
