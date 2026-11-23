@@ -299,6 +299,66 @@ La página dibuja el **punto de mira** del cazador (hace círculos) y el **avió
 
 ---
 
+## Reparto de tareas: antes del laboratorio (3 PCs + 1 ESP32 clásica)
+
+Fuera del laboratorio solo tenemos **3 PCs y 1 ESP32 clásica** (no C3). Con eso se puede adelantar
+casi todo. La 02 y la 08 con placas se quedan para el laboratorio porque necesitan 2-3 placas.
+
+### Cambios para la ESP32 clásica (no subirlos a `main`)
+- *Herramientas → Placa:* **ESP32 Dev Module** (no "ESP32C3 Dev Module").
+- Lleva un chip USB-serie (CP2102 o CH340): si no aparece ningún COM, falta instalar su driver.
+  Lo de *USB CDC On Boot* no se aplica a esta placa.
+- **Botón BOOT = GPIO0** (en la C3 es el 9): en 05, 06 y 04 cambiad `PIN_BOTON = 9` por `PIN_BOTON = 0`.
+  El GPIO0 también es pin de arranque: si está pulsado al enchufar o al pulsar EN, entra en modo programación.
+- **No tiene LED RGB integrado:** en 06 y 04 el LED no hace nada (el código lo detecta), pero todo
+  sale por el monitor serie. En la 04 la versión se ve en el mensaje `firmware versión N`.
+- ⚠️ **07 (LED RGB): cambiad `PIN_RGB = 8` por `PIN_RGB = 4` ANTES de subirlo.** Sin LED integrado
+  el código usa el GPIO8, que en la ESP32 clásica es de la **memoria flash**: la placa se cuelga o
+  se reinicia en bucle.
+- En la 04 el binario exportado sale en `build/esp32.esp32.esp32/` (no en `esp32c3`).
+- En la 03 el CHIPID saldrá como `esp32c3-XXXXXX`: es solo el nombre, no importa.
+
+Son cambios locales para probar: al terminar, deshacedlos (`git restore <archivo>`) para que el
+código de `main` siga preparado para la C3.
+
+### Iván: placa sin red (05, 06, 07)
+Empieza con la ESP32 y se la pasa a David al acabar.
+- [ ] **05 FreeRTOS** completa, con `PIN_BOTON = 0`. Dejarla 10 min y apuntar la pila libre mínima de cada tarea.
+- [ ] **06 Botón** por el monitor serie, con `PIN_BOTON = 0`. 20 pulsaciones de cada tipo y apuntar los fallos.
+- [ ] **07 LED RGB**, solo la lógica, con `PIN_RGB = 4`. Comprobar que cada orden saca **un solo** JSON
+      al terminar y que el tiempo coincide con la velocidad (`b 100` ≈ 0,7 s; con `v 50`, ≈ 5 s).
+      El color de verdad se comprueba en el laboratorio con una C3.
+- [ ] Rellenar sus filas en la tabla de resultados y anotar los problemas.
+
+### David: placa con red (03, 04)
+Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, WPA2, con datos) y la
+**clave MQTT del grupo II16** (Campus Virtual).
+- [ ] **03 MQTT** completa: `conexion` retenido, `datos`, `config` (`{"envia":10}`, `null`, `hola`),
+      LWT al desconectar el USB y reconexión al quitar el hotspot. Miguel mira los mensajes desde su PC.
+- [ ] Medir la latencia MQTT con `python medir_latencia_mqtt.py <CHIPID>` y apuntar la media.
+- [ ] **04 FOTA** completa, con `PIN_BOTON = 0`: v1 → v2 sin cable, actualización al arrancar y robustez
+      (servidor parado, falta `firmware.bin`). El servidor (`python -m http.server 8000`) puede ser
+      el PC de Miguel, conectado al mismo hotspot.
+- [ ] Rellenar sus filas en la tabla de resultados y anotar los problemas.
+
+### Miguel: los 3 PCs y Node-RED (preparación y 08 sin placas)
+- [ ] **Dejar preparados los 3 PCs** (ver *Preparación*): Arduino IDE 2 + soporte esp32 3.x,
+      librerías `PubSubClient` y `ArduinoJson` v7, `pip install pyserial paho-mqtt`, y Docker.
+      Probar que cada PC compila un sketch para **ESP32C3 Dev Module**, para no perder tiempo en el laboratorio.
+- [ ] **08, parte de Node-RED:** arrancar Node-RED con `-p 5005:5005/udp`, importar `flujo_etapa2.json`,
+      ejecutar `python simular_mandos_udp.py` y comprobar en `http://localhost:1880/etapa2`:
+      "conectado", ~100 msg/s, el punto de mira girando y el avión balanceándose.
+- [ ] Ayudar a David: en la 03, ver los mensajes con **MQTT Explorer** (`iot.ac.uma.es`, 1883, usuario
+      `II16`); en la 04, hacer de **servidor FOTA**.
+- [ ] Anotar en la tabla los problemas de instalación (sirven para la memoria).
+
+### Después, en el laboratorio (con las 3 C3, todos)
+- [ ] **02** Emparejamiento ESP-NOW (2 placas).
+- [ ] **07** con el LED RGB de verdad (y repetir 05 y 06 en C3, con los pines originales).
+- [ ] **08** completa: base + 2 mandos simulados → puente → Node-RED → web.
+
+---
+
 ## Resultados (rellenad al hacer cada prueba)
 
 | # | Fecha | Quién | Resultado | Notas |
