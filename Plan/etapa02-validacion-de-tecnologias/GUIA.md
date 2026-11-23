@@ -360,6 +360,10 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 - [ ] **Dejar preparados los 3 PCs** (ver *Preparación*): Arduino IDE 2 + soporte esp32 3.x,
       librerías `PubSubClient` y `ArduinoJson` v7, `pip install pyserial paho-mqtt`, y Docker.
       Probar que cada PC compila un sketch para **ESP32C3 Dev Module**, para no perder tiempo en el laboratorio.
+      - [x] PC de Miguel (2026-11-23): esp32 3.3.12, `PubSubClient` 2.8, `ArduinoJson` 7.4.3, Python 3.14.10 con
+            `pyserial` 3.5 y `paho-mqtt` 2.2.0, Docker con Node-RED. `NodoMQTT` (03) compila para la C3 (74 % flash, 11 % RAM)
+      - [ ] PC de Iván
+      - [ ] PC de David
 - [x] **08, parte de Node-RED:** arrancar Node-RED con `-p 5005:5005/udp`, importar `flujo_etapa2.json`,
       ejecutar `python simular_mandos_udp.py` y comprobar en `http://localhost:1880/etapa2`:
       "conectado", ~100 msg/s, el punto de mira girando y el avión balanceándose.
@@ -385,7 +389,7 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 | 05 | 2026-11-23 | Iván | ✅ | ESP32 clásica (`PIN_BOTON = 0`). 605 s sin reinicios; sensor 100 Hz y envíos 50 Hz estables; latido cada 2 s; 6 disparos con latencia 0 ms; heap libre constante (320468 B, sin fugas). Pila libre mínima: sensor 2276, coms 2028, botón 1468, eventos 2620 (**bytes**, aunque el programa diga "palabras": en ESP32 `uxTaskGetStackHighWaterMark` devuelve bytes). 1 línea con bytes basura en el serie en t≈157 s, sin reinicio: fallo puntual de la transmisión USB, no mezcla de mensajes |
 | 06 | | | ✅ | Marcada como hecha |
 | 07 | | | ✅ | Marcada como hecha |
-| 08 | 2026-11-23 | Miguel | 🟡 parte Node-RED ✅ | **Solo la parte sin placas** (simulador → Node-RED → web): "conectado", **~81 msg/s** estables (80-82), punto de mira girando y avión balanceándose. Probablemente el simulador envía menos de 100 msg/s porque cada vuelta tarda algo más de 20 ms (se ejecutó en Docker en Windows); no es pérdida en Node-RED. **Falta la prueba completa con placas** en el laboratorio (msg/s por mando y pérdidas) |
+| 08 | 2026-11-23 | Miguel | 🟡 parte Node-RED ✅ | **Solo la parte sin placas** (simulador → Node-RED → web): "conectado", **~97 msg/s** (96-98) con el simulador en Python nativo, punto de mira girando y avión balanceándose. (Con el simulador dentro de Docker salían ~81 msg/s: el contenedor envía más despacio, no era pérdida en Node-RED.) **Falta la prueba completa con placas** en el laboratorio (msg/s por mando y pérdidas) |
 
 ### Problemas encontrados y soluciones
 - **08 · Node-RED sin el puerto UDP** (Miguel): el Node-RED ya existente (con `docker-compose.yml`) solo publicaba el 1880, así que no le llegaban los datos de los mandos.
@@ -395,6 +399,8 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
   Para la prueba sin placas se ejecutó el simulador en un contenedor:
   `docker run --rm -v <carpeta 08_nodered_web>:/w python:3.12-alpine python /w/simular_mandos_udp.py host.docker.internal 5005`.
   Para el laboratorio hace falta **instalar Python** de verdad: `puente_serie_udp.py` lee el puerto COM y un contenedor no lo ve.
+  **Solución definitiva:** instalar Python desde python.org (*Windows installer (64-bit)*) marcando **"Add python.exe to PATH"**,
+  abrir una terminal nueva y `pip install pyserial paho-mqtt`. Con Python nativo el simulador da ~97 msg/s (en Docker, ~81).
 - **Rutas demasiado largas en Windows**: si el repositorio se clona en una carpeta muy profunda, `git clone` falla
   (`Filename too long`) y Windows PowerShell no encuentra los archivos. Solución: clonar en una ruta corta (p. ej. `C:\iot\`)
   o usar `git config --global core.longpaths true`.
