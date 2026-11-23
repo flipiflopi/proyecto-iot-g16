@@ -1,6 +1,6 @@
 # Etapa 2 — Validación de tecnologías (sin sensores)
 
-> **Estado:** código completo ✅ · compilado para ESP32-C3 ✅ · pruebas en placa: 01, 03-08 hechas ✅, 02 **pendiente** · **09 nueva, pendiente** (código escrito, sin compilar) (por el [cambio de arquitectura](../ARQUITECTURA.md)) · [prioridades](#prioridad-de-las-pruebas)
+> **Estado:** código completo ✅ · compilado para ESP32-C3 ✅ · pruebas en placa: 01, 03-09 hechas ✅, 02 **pendiente** · la 09 valida el [cambio de arquitectura](../ARQUITECTURA.md) · [prioridades](#prioridad-de-las-pruebas)
 
 Objetivo: comprobar, **una por una y por separado**, todas las tecnologías del proyecto antes de
 juntarlas. Ninguna prueba necesita las IMU (BNO055 y MPU6050): todo se hace con las ESP32-C3 del laboratorio.
@@ -15,7 +15,7 @@ juntarlas. Ninguna prueba necesita las IMU (BNO055 y MPU6050): todo se hace con 
 | 06 | [Botón BOOT](#06--botón-boot-simple-doble-y-larga) | Pulsación simple / doble / larga con antirrebote | 1 | ✅ |
 | 07 | [LED RGB](#07--led-rgb-gradual) | Cambios graduales de color e intensidad | 1 | ✅ |
 | 08 | [Mandos → web](#08--mandos--base--pc--node-red--web) | La cadena completa hasta una página web en Node-RED | 3 | ✅ |
-| 09 | [Base con ESP-NOW + web + MQTT](#09--base-con-esp-now--web--mqtt-a-la-vez) | La base recibe los mandos, sirve la web con WebSocket a 50 Hz y usa MQTT, todo a la vez en el hotspot | 3 | ⬜ (código escrito, sin probar) |
+| 09 | [Base con ESP-NOW + web + MQTT](#09--base-con-esp-now--web--mqtt-a-la-vez) | La base recibe los mandos, sirve la web con WebSocket a 50 Hz y usa MQTT, todo a la vez en el hotspot | 3 | ✅ |
 
 Las pruebas son independientes: cada integrante puede hacer unas distintas.
 
@@ -317,7 +317,7 @@ La página dibuja el **punto de mira** del cazador (hace círculos) y el **avió
 
 ## 09 · Base con ESP-NOW + web + MQTT a la vez
 > **Nueva (2026-11-23)**, por el [cambio de arquitectura](../ARQUITECTURA.md): el juego lo sirve la base, no Node-RED.
-> Código escrito, **todavía sin compilar ni probar** en placa.
+> **Superada el 2026-11-23** (ver *Resultados*).
 
 **Carpeta:** `09_base_web/` · **Placas:** 3 (base + 2 mandos)
 - `BaseWeb/`: la base. `BaseWeb.ino` + `pagina.h` (la página, la de la 08 con un panel de estadísticas) + `secrets.example.h`.
@@ -450,7 +450,7 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 | 06 | | | ✅ | Marcada como hecha |
 | 07 | | | ✅ | Marcada como hecha |
 | 08 | 2026-11-23 | Todos | ✅ | **Con placas (3 ESP32-C3):** base en COM19 del portátil, cazador (`ID_MANDO 1`) y pájaro (`ID_MANDO 2`) alimentados por USB, canal 1. Puente `python puente_serie_udp.py COM19 127.0.0.1 5006`: **99-101 msg/s** reenviados a Node-RED; línea `BASE:` **~250 paquetes por mando cada 5 s (50 Hz)** y **0-1 perdidos (≤ 0,4 %)**. Web fluida durante 1 min, sin tirones; disparo (BOOT del cazador) visible al instante; al desconectar el pájaro sale gris y quieto, y vuelve solo al reconectarlo. Antes, Miguel probó la parte sin placas (simulador → web): ~97 msg/s con Python nativo (~81 con el simulador en Docker, que envía más despacio) |
-| 09 | | | | msg/s en el navegador, pérdidas, 5 min con 2 navegadores, MQTT, heap: |
+| 09 | 2026-11-23 | Iván y David | ✅ | Base (`BaseWeb`) y cazador en el PC de Iván, pájaro en el PC de David; base conectada al hotspot del móvil (2,4 GHz, WPA2). Compiló con las librerías de ESP32Async. **Funcionó todo:** los mandos encuentran solos el canal del hotspot, la web servida por la base se mueve con fluidez, MQTT a la vez (orden recibida en la página y estado publicado), disparo, desconexión/reconexión de un mando y recuperación tras reiniciar la base. No se apuntaron las cifras de paquetes/pérdidas/heap |
 
 ### Problemas encontrados y soluciones
 - **08 · Node-RED sin el puerto UDP** (Miguel): el Node-RED ya existente (con `docker-compose.yml`) solo publicaba el 1880, así que no le llegaban los datos de los mandos.
@@ -466,6 +466,9 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
   porque lo usa el servicio de Windows **wmpnetwk** (Uso compartido de red del Reproductor de Windows Media).
   Solución sin tocar el servicio: publicar otro puerto del PC hacia el 5005 del contenedor (`- 5006:5005/udp` en `ports:`)
   y lanzar el puente con ese puerto: `python puente_serie_udp.py COMx 127.0.0.1 5006`. El flujo no cambia (sigue escuchando el 5005 dentro).
+- **09 · `secrets.h: No such file or directory`** al compilar `BaseWeb`: se había pegado el código en un sketch nuevo
+  (carpeta temporal `sketch_nov23a`), donde no están `secrets.h` ni `pagina.h`. Solución: *Archivo → Abrir* el `BaseWeb.ino`
+  del repositorio; deben verse las pestañas `pagina.h` y `secrets.h`.
 - **08 · Monitor serie de la base con caracteres raros**: la base escribe a **921600 baudios**; con el monitor a 115200 se ve basura.
   Poner el monitor a 921600 (y cerrarlo antes de arrancar el puente).
 - **Rutas demasiado largas en Windows**: si el repositorio se clona en una carpeta muy profunda, `git clone` falla
@@ -473,6 +476,6 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
   o usar `git config --global core.longpaths true`.
 
 ## Etapa 2 terminada cuando
-- [ ] Las pruebas de prioridad alta (01, 02, 03, 08 y la nueva 09) superadas y anotadas en la tabla
+- [ ] Las pruebas de prioridad alta (01, 02, 03, 08 y la nueva 09) superadas y anotadas en la tabla (falta la 02)
 - [ ] 06 y 07 comprobadas en una C3 (rápido)
 - [ ] Problemas encontrados y sus soluciones escritos aquí (servirán para la memoria)
