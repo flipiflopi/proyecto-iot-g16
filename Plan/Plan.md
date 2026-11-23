@@ -3,6 +3,8 @@
 Entrega: **~20 de diciembre**. Sin estimaciones por semanas: se avanza lo antes posible.
 Código en casa, pruebas en el laboratorio con sus ESP32-C3.
 
+**Arquitectura:** ver [ARQUITECTURA.md](ARQUITECTURA.md) (decisión del 2026-11-23: el juego corre en la base; Node-RED para dashboard y BD).
+
 Cada etapa tiene su carpeta `etapaN/` con su código y una **GUIA.md** detallada (qué hacer y cómo probarlo).
 Estado de las guías: **etapa 1** en curso · **etapa 2** completa (código + guía) · **etapas 3-12** borradores pendientes de revisar.
 
@@ -56,16 +58,14 @@ y la inyecta en el mismo sitio por el que llegarán los datos reales. Permite ha
 
 ## Etapa 2 — Validación de tecnologías 🟢 🔀
 📁 Carpeta y guía: [etapa02-validacion-de-tecnologias/GUIA.md](etapa02-validacion-de-tecnologias/GUIA.md)
-Pruebas pequeñas e independientes, cada una en su carpeta dentro de `etapa02-validacion-de-tecnologias/`. Código completo ✅ · pruebas en placa pendientes:
+Pruebas pequeñas e independientes, cada una en su carpeta dentro de `etapa02-validacion-de-tecnologias/`. Estado al 2026-11-23:
 - ✅ **Latencia ESP-NOW** (mando → base → PC): ~4 ms de media. Ver `etapa02-validacion-de-tecnologias/01_latencia_espnow`
-- ⬜ **ESP-NOW unicast con ACK**: el mando conoce la MAC de la base y los disparos no se pierden
-- ⬜ **Canal automático**: el mando encuentra solo el canal WiFi de la base
-- ⬜ **MQTT** con el broker `iot.ac.uma.es` (usuario II16): publicar/suscribir, mensaje retenido y LWT
-- ⬜ **FOTA básica**: una placa se actualiza desde el servidor OTA de la universidad
-- ⬜ **FreeRTOS**: esqueleto con tareas, colas y temporizadores
-- ⬜ **Botón BOOT**: pulsación simple / doble / larga con antirrebote
-- ⬜ **LED RGB**: cambio gradual de color e intensidad
-- ⬜ **Node-RED**: recibir por puerto serie desde la base y reenviarlo a una web por WebSocket
+- ⬜ **ESP-NOW unicast con ACK + canal automático** (02): el mando encuentra solo a la base y los disparos no se pierden
+- ✅ **MQTT** con el broker `iot.ac.uma.es` (usuario II16) (03)
+- ✅ **FOTA básica** (04; la completa, en la etapa 9)
+- ✅ **FreeRTOS** (05), **botón BOOT** (06), **LED RGB** (07)
+- ✅ **Mandos → base → PC → Node-RED → web** (08): ~100 msg/s, pérdidas ≤ 0,4 %
+- ⬜ **Base con ESP-NOW + web (WebSocket 50 Hz) + MQTT a la vez** (09, nueva por el cambio de arquitectura)
 
 **Hecho cuando:** cada prueba funciona sola y queda documentada.
 
@@ -94,20 +94,21 @@ Un único firmware; el rol (BASE / CAZADOR / PÁJARO) se decide por configuraci�
 - ⬜ **Botón**: simple / doble / largo, con antirrebote
 - ⬜ Configuración por mensaje (`config`) y guardada en flash (persistente)
 
-## Etapa 5 — Base / pasarela 🟢 🔀
+## Etapa 5 — Base / pasarela (y servidor del juego) 🟢 🔀
 📁 Carpeta y guía: [etapa05-base-pasarela/GUIA.md](etapa05-base-pasarela/GUIA.md)
 - ⬜ ESP-NOW ↔ MQTT: publica en nombre de los mandos con los **topics obligatorios** (`II16/esp32c3-XXXX/...`)
 - ⬜ Latido de los mandos → `conexion` `online:false` si dejan de responder (equivalente a LWT)
-- ⬜ Reenvío en tiempo real al PC por USB serie
+- ⬜ ~~Reenvío en tiempo real al PC por USB serie~~ → **servidor web + WebSocket 50 Hz** en la propia base (ver [ARQUITECTURA.md](ARQUITECTURA.md))
 - ⬜ LED RGB de la base con el estado de la partida (esperando, jugando, fin)
 - ⬜ Órdenes individuales y **de grupo** (topic `II16/all/...`)
 
 **Se prueba con** 3 placas del laboratorio: base + 2 mandos simulados.
 
-## Etapa 6 — Juego (web servida por Node-RED) 🟢 🔀
+## Etapa 6 — Juego (lógica y web en la base) + dashboard en Node-RED 🟢 🔀
 📁 Carpeta y guía: [etapa06-juego-web/GUIA.md](etapa06-juego-web/GUIA.md)
-- ⬜ Canvas sencillo: escenario, cursor del cazador, pájaro pilotado
-- ⬜ Detección de impacto (la decide un solo sitio: el juego)
+- ⬜ Canvas sencillo (página en LittleFS de la base): escenario, cursor del cazador, pájaro pilotado
+- ⬜ Detección de impacto (la decide un solo sitio: la **base**)
+- ⬜ **Dashboard en Node-RED** (`@flowfuse/node-red-dashboard`): nombres, quién es quién, duración, iniciar partida, historial; configuración a la base por MQTT
 - ⬜ Partida según las reglas de [etapa06-juego-web/REGLAS.md](etapa06-juego-web/REGLAS.md) (60 s, 3 vidas, puntos según el tiempo); impacto → vibración en ambos mandos
 - ⬜ Escenarios cargados desde MongoDB
 
@@ -201,5 +202,6 @@ USB y botón accesibles, LED visible, y cables sujetos para que no se suelten al
   misma base de datos, se duplicarán registros y mensajes de Telegram. Solo una instancia debe
   ser la "oficial"; para desarrollar, usad topics/colecciones de prueba propios o un bot distinto.
 - **Botón BOOT**: el enunciado le asigna funciones fijas; si se usa como gatillo, pedir permiso o usar un pulsador aparte.
-- **WiFi**: `infind` no conectó; eduroam no vale. Plan: hotspot del móvil (2,4 GHz, WPA2).
+- **WiFi**: `infind` no conectó; eduroam no vale. **Decidido:** hotspot del móvil o router propio (2,4 GHz, WPA2); la base, el PC y el navegador en esa red (opción A de [ARQUITECTURA.md](ARQUITECTURA.md)).
+- **Base sobrecargada** (ESP-NOW + web + MQTT a la vez) → prueba 09 de la etapa 2; plan B: juego en Node-RED por USB (la 08).
 - **Impresora 3D**: si no hay, opción B (cartón/contrachapado sobre el powerbank).

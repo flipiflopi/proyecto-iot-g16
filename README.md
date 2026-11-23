@@ -4,21 +4,22 @@ Juego IoT "**Cazador vs. Pájaro**" con 3 ESP32-C3:
 
 | Nodo | Función |
 |---|---|
-| **Base / pasarela** | Recibe los mandos por ESP-NOW, los reenvía al PC (USB) y al broker MQTT; LED RGB con el estado de la partida |
+| **Base / pasarela** | Recibe los mandos por ESP-NOW, **ejecuta la lógica del juego y sirve la página web** (WebSocket 50 Hz); habla con Node-RED por MQTT; LED RGB con el estado de la partida |
 | **Cazador** | Apunta con la mano (IMU 9 ejes BNO055) y dispara; vibración de retroceso |
 | **Pájaro** | Pilota el objetivo inclinando la mano (IMU 6 ejes MPU6050); vibración al recibir un impacto |
 
 ```
- [Cazador] --ESP-NOW-->                    --USB serie--> PC: Node-RED --> juego (web)
-                         [BASE / pasarela]
- [Pájaro]  --ESP-NOW-->                    --WiFi/MQTT--> broker iot.ac.uma.es
-            <--ESP-NOW-- (órdenes, FOTA)                       |
-                                                Node-RED: MongoDB (log y partidas), Telegram
+ [Cazador] --ESP-NOW-->                     --WiFi (WebSocket)--> navegador: juego (servido por la base)
+                         [BASE: juego + web]
+ [Pájaro]  --ESP-NOW-->                     --WiFi/MQTT--> broker iot.ac.uma.es
+            <--ESP-NOW-- (vibración, órdenes, FOTA)            |
+                                      Node-RED (PC): dashboard (jugadores, partidas), MongoDB, Telegram
 ```
+Todo en la misma WiFi (hotspot del móvil o router propio). Detalle y motivos: [Plan/ARQUITECTURA.md](Plan/ARQUITECTURA.md).
 
 - **Plan por etapas:** [Plan/Plan.md](Plan/Plan.md) (cada etapa en `Plan/etapaNN-descripcion/` con su código y su GUIA.md)
 - **Lista de compra:** [Plan/etapa01-organizacion-y-compras/COMPRAS.md](Plan/etapa01-organizacion-y-compras/COMPRAS.md)
-- **Etapa 2, validación de tecnologías:** [Plan/etapa02-validacion-de-tecnologias/GUIA.md](Plan/etapa02-validacion-de-tecnologias/GUIA.md) (latencia ESP-NOW superada, ~4 ms)
+- **Etapa 2, validación de tecnologías:** [Plan/etapa02-validacion-de-tecnologias/GUIA.md](Plan/etapa02-validacion-de-tecnologias/GUIA.md) (01 y 03-08 superadas; pendientes la 02 y la nueva 09)
 
 ## Estructura
 | Carpeta | Contenido |
