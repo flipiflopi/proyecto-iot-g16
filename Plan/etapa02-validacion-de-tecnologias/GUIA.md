@@ -360,7 +360,7 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 - [ ] **Dejar preparados los 3 PCs** (ver *Preparación*): Arduino IDE 2 + soporte esp32 3.x,
       librerías `PubSubClient` y `ArduinoJson` v7, `pip install pyserial paho-mqtt`, y Docker.
       Probar que cada PC compila un sketch para **ESP32C3 Dev Module**, para no perder tiempo en el laboratorio.
-- [ ] **08, parte de Node-RED:** arrancar Node-RED con `-p 5005:5005/udp`, importar `flujo_etapa2.json`,
+- [x] **08, parte de Node-RED:** arrancar Node-RED con `-p 5005:5005/udp`, importar `flujo_etapa2.json`,
       ejecutar `python simular_mandos_udp.py` y comprobar en `http://localhost:1880/etapa2`:
       "conectado", ~100 msg/s, el punto de mira girando y el avión balanceándose.
 - [ ] Ayudar a David: en la 03, ver los mensajes con **MQTT Explorer** (`iot.ac.uma.es`, 1883, usuario
@@ -385,7 +385,19 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 | 05 | 2026-11-23 | Iván | ✅ | ESP32 clásica (`PIN_BOTON = 0`). 605 s sin reinicios; sensor 100 Hz y envíos 50 Hz estables; latido cada 2 s; 6 disparos con latencia 0 ms; heap libre constante (320468 B, sin fugas). Pila libre mínima: sensor 2276, coms 2028, botón 1468, eventos 2620 (**bytes**, aunque el programa diga "palabras": en ESP32 `uxTaskGetStackHighWaterMark` devuelve bytes). 1 línea con bytes basura en el serie en t≈157 s, sin reinicio: fallo puntual de la transmisión USB, no mezcla de mensajes |
 | 06 | | | ✅ | Marcada como hecha |
 | 07 | | | ✅ | Marcada como hecha |
-| 08 | | | | msg/s y pérdidas: |
+| 08 | 2026-11-23 | Miguel | 🟡 parte Node-RED ✅ | **Solo la parte sin placas** (simulador → Node-RED → web): "conectado", **~81 msg/s** estables (80-82), punto de mira girando y avión balanceándose. Probablemente el simulador envía menos de 100 msg/s porque cada vuelta tarda algo más de 20 ms (se ejecutó en Docker en Windows); no es pérdida en Node-RED. **Falta la prueba completa con placas** en el laboratorio (msg/s por mando y pérdidas) |
+
+### Problemas encontrados y soluciones
+- **08 · Node-RED sin el puerto UDP** (Miguel): el Node-RED ya existente (con `docker-compose.yml`) solo publicaba el 1880, así que no le llegaban los datos de los mandos.
+  Solución: añadir `- 5005:5005/udp` en `ports:` del servicio `nodered` y `docker compose up -d nodered`.
+  Los flujos se conservan porque están en la carpeta montada en `/data`.
+- **08 · Python no instalado** (Miguel): en Windows, `python` abría la Microsoft Store (es solo un acceso directo).
+  Para la prueba sin placas se ejecutó el simulador en un contenedor:
+  `docker run --rm -v <carpeta 08_nodered_web>:/w python:3.12-alpine python /w/simular_mandos_udp.py host.docker.internal 5005`.
+  Para el laboratorio hace falta **instalar Python** de verdad: `puente_serie_udp.py` lee el puerto COM y un contenedor no lo ve.
+- **Rutas demasiado largas en Windows**: si el repositorio se clona en una carpeta muy profunda, `git clone` falla
+  (`Filename too long`) y Windows PowerShell no encuentra los archivos. Solución: clonar en una ruta corta (p. ej. `C:\iot\`)
+  o usar `git config --global core.longpaths true`.
 
 ## Etapa 2 terminada cuando
 - [ ] Las pruebas de prioridad alta (01, 02, 03, 08) superadas y anotadas en la tabla
