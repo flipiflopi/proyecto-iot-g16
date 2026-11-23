@@ -92,7 +92,13 @@ void alRecibirMQTT(char *topic, byte *payload, unsigned int len) {
   Serial.printf("<- %s %.*s\n", topic, len, (const char *)payload);
 
   if (t == tPing) {            // Eco para medir latencia
-    mqtt.publish(tPong.c_str(), payload, len);
+    // OJO: "payload" apunta al búfer interno de PubSubClient, y publish() escribe en ese
+    // mismo búfer. Si se publica directamente, el topic nuevo pisa el contenido
+    // (llegaba "on" en vez del número). Hay que copiarlo antes.
+    uint8_t copia[64];
+    unsigned int n = len < sizeof(copia) ? len : sizeof(copia);
+    memcpy(copia, payload, n);
+    mqtt.publish(tPong.c_str(), copia, n);
     return;
   }
 
