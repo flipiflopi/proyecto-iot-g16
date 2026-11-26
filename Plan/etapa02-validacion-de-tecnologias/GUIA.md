@@ -401,8 +401,8 @@ código de `main` siga preparado para la C3.
 > una comprobación rápida en el laboratorio con una C3. Iván pasa la ESP32 a David para la **03**.
 
 - [x] **05 FreeRTOS** completa, con `PIN_BOTON = 0`: 605 s sin reinicios (ver *Resultados*).
-- [ ] ~~06 Botón, 20 pulsaciones de cada tipo~~ → comprobación rápida en el laboratorio con una C3.
-- [ ] ~~07 LED RGB, solo la lógica~~ → comprobación rápida en el laboratorio con una C3 (con el LED de verdad).
+- [x] ~~06 Botón, 20 pulsaciones de cada tipo~~ → comprobación rápida en el laboratorio con una C3.
+- [x] ~~07 LED RGB, solo la lógica~~ → comprobación rápida en el laboratorio con una C3 (con el LED de verdad).
 - [x] Rellenar sus filas en la tabla de resultados y anotar los problemas.
 
 ### David: placa con red (03, 04)
@@ -433,7 +433,7 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 
 ### Después, en el laboratorio (con las 3 C3, todos)
 - [x] **02** Emparejamiento ESP-NOW (2 placas) (2026-11-23, Miguel, ✅).
-- [ ] **06** y **07**, comprobación rápida en una C3 con los pines originales (unos minutos, sin protocolo).
+- [x] **06** y **07**, comprobación rápida en una C3 con los pines originales (unos minutos, sin protocolo) (2026-11-26, Miguel, ✅).
 - [x] **08** completa: base + 2 mandos simulados → puente → Node-RED → web (2026-11-23, ✅).
 
 ---
@@ -447,8 +447,8 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 | 03 | | | ✅ | Marcada como hecha |
 | 04 | | | ✅ | Marcada como hecha (la FOTA definitiva, en la etapa 9) |
 | 05 | 2026-11-23 | Iván | ✅ | ESP32 clásica (`PIN_BOTON = 0`). 605 s sin reinicios; sensor 100 Hz y envíos 50 Hz estables; latido cada 2 s; 6 disparos con latencia 0 ms; heap libre constante (320468 B, sin fugas). Pila libre mínima: sensor 2276, coms 2028, botón 1468, eventos 2620 (**bytes**, aunque el programa diga "palabras": en ESP32 `uxTaskGetStackHighWaterMark` devuelve bytes). 1 línea con bytes basura en el serie en t≈157 s, sin reinicio: fallo puntual de la transmisión USB, no mezcla de mensajes |
-| 06 | | | ✅ | Marcada como hecha |
-| 07 | | | ✅ | Marcada como hecha |
+| 06 | 2026-11-26 | Miguel | ✅ | Comprobación rápida en una ESP32-C3 con los pines originales (`PIN_BOTON = 9`): pulsaciones simple, doble y larga detectadas bien, cada una con un solo evento, y el LED responde |
+| 07 | 2026-11-26 | Miguel | ✅ | Comprobación rápida en una ESP32-C3 con el LED RGB integrado (GPIO8): cambios de brillo y color graduales, tiempos según la velocidad (`v`) y un solo mensaje JSON al terminar cada cambio |
 | 08 | 2026-11-23 | Todos | ✅ | **Con placas (3 ESP32-C3):** base en COM19 del portátil, cazador (`ID_MANDO 1`) y pájaro (`ID_MANDO 2`) alimentados por USB, canal 1. Puente `python puente_serie_udp.py COM19 127.0.0.1 5006`: **99-101 msg/s** reenviados a Node-RED; línea `BASE:` **~250 paquetes por mando cada 5 s (50 Hz)** y **0-1 perdidos (≤ 0,4 %)**. Web fluida durante 1 min, sin tirones; disparo (BOOT del cazador) visible al instante; al desconectar el pájaro sale gris y quieto, y vuelve solo al reconectarlo. Antes, Miguel probó la parte sin placas (simulador → web): ~97 msg/s con Python nativo (~81 con el simulador en Docker, que envía más despacio) |
 | 09 | 2026-11-23 | Iván y David | ✅ | Base (`BaseWeb`) y cazador en el PC de Iván, pájaro en el PC de David; base conectada al hotspot del móvil (2,4 GHz, WPA2). Compiló con las librerías de ESP32Async. **Funcionó todo:** los mandos encuentran solos el canal del hotspot, la web servida por la base se mueve con fluidez, MQTT a la vez (orden recibida en la página y estado publicado), disparo, desconexión/reconexión de un mando y recuperación tras reiniciar la base. No se apuntaron las cifras de paquetes/pérdidas/heap |
 
@@ -483,5 +483,5 @@ Usa la ESP32 cuando Iván termine. Necesita el **hotspot del móvil** (2,4 GHz, 
 
 ## Etapa 2 terminada cuando
 - [x] Las pruebas de prioridad alta (01, 02, 03, 08 y la nueva 09) superadas y anotadas en la tabla
-- [ ] 06 y 07 comprobadas en una C3 (rápido)
+- [x] 06 y 07 comprobadas en una C3 (rápido)
 - [ ] Problemas encontrados y sus soluciones escritos aquí (servirán para la memoria)
