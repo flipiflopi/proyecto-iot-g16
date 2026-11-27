@@ -3,7 +3,7 @@
 > **Estado:** código completo ✅ · compilado para ESP32-C3 ✅ · pruebas en placa: 01-09 hechas ✅ · la 09 valida el [cambio de arquitectura](../ARQUITECTURA.md) · [prioridades](#prioridad-de-las-pruebas)
 
 Objetivo: comprobar, **una por una y por separado**, todas las tecnologías del proyecto antes de
-juntarlas. Ninguna prueba necesita las IMU (BNO055 y MPU6050): todo se hace con las ESP32-C3 del laboratorio.
+juntarlas. Ninguna prueba necesita las IMU (MPU6050): todo se hace con las ESP32-C3 del laboratorio.
 
 | # | Prueba | Qué valida | Placas | Estado |
 |---|---|---|---|---|

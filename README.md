@@ -5,7 +5,7 @@ Juego IoT "**Cazador vs. Pájaro**" con 3 ESP32-C3:
 | Nodo | Función |
 |---|---|
 | **Base / pasarela** | Recibe los mandos por ESP-NOW, **ejecuta la lógica del juego y sirve la página web** (WebSocket 50 Hz); habla con Node-RED por MQTT; LED RGB con el estado de la partida |
-| **Cazador** | Apunta con la mano (IMU 9 ejes BNO055) y dispara; vibración de retroceso |
+| **Cazador** | Apunta con la mano (IMU 6 ejes MPU6050) y dispara; vibración de retroceso |
 | **Pájaro** | Pilota el objetivo inclinando la mano (IMU 6 ejes MPU6050); vibración al recibir un impacto |
 
 ```
