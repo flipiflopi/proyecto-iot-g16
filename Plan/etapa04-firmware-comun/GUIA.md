@@ -9,7 +9,7 @@ Un **único firmware** para las 3 placas; el rol (BASE / CAZADOR / PÁJARO) se d
 
 ## Tareas previstas
 - [ ] Estructura FreeRTOS (prueba 05): tareas de sensor, comunicaciones, actuadores y botón; colas
-- [ ] Sensor detrás de `leerOrientacion()` con modo **simulado** y modo **real** (BNO055 en el cazador, MPU6050 en el pájaro)
+- [ ] Sensor detrás de `leerOrientacion()` con modo **simulado** y modo **real** (MPU6050 en los dos mandos)
 - [ ] Protocolo ESP-NOW común: orientación (broadcast, 50-100 Hz); disparo, impacto y órdenes (unicast con ACK, prueba 02); latido; versión
 - [ ] Emparejamiento automático con la base (prueba 02)
 - [ ] LED RGB gradual (prueba 07) y botón simple/doble/larga (prueba 06)

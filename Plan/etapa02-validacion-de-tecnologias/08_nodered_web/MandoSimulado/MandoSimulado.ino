@@ -8,7 +8,7 @@
   Al pulsar BOOT envía "disparo" (bit en el campo botones).
 
   Es exactamente el formato de datos que enviará el mando real; cuando lleguen
-  las IMU (BNO055 cazador, MPU6050 pájaro) solo cambia de dónde salen yaw/pitch/roll.
+  las IMU (MPU6050 en los dos mandos) solo cambia de dónde salen yaw/pitch/roll.
 
   Monitor serie a 115200.
   ============================================================================
